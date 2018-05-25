@@ -41,7 +41,7 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate("local", (err: Error, user: UserModel, info: IVerifyOptions) => {
     if (err) { return next(err); }
     if (!user) {
-      req.flash("errors", info.message);
+      req.flash("errors", { msg: "Your password or email was incorrect."});
       return res.redirect("/login");
     }
     req.logIn(user, (err) => {
@@ -196,24 +196,6 @@ export let postDeleteAccount = (req: Request, res: Response, next: NextFunction)
     req.logout();
     req.flash("info", { msg: "Your account has been deleted." });
     res.redirect("/");
-  });
-};
-
-/**
- * GET /account/unlink/:provider
- * Unlink OAuth provider.
- */
-export let getOauthUnlink = (req: Request, res: Response, next: NextFunction) => {
-  const provider = req.params.provider;
-  User.findById(req.user.id, (err, user: any) => {
-    if (err) { return next(err); }
-    user[provider] = undefined;
-    user.tokens = user.tokens.filter((token: AuthToken) => token.kind !== provider);
-    user.save((err: WriteError) => {
-      if (err) { return next(err); }
-      req.flash("info", { msg: `${provider} account has been unlinked.` });
-      res.redirect("/account");
-    });
   });
 };
 
