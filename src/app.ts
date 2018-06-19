@@ -7,6 +7,7 @@ import flash from "express-flash";
 import path from "path";
 import passport from "passport";
 import expressValidator from "express-validator";
+import { SESSION_SECRET } from "./util/secrets";
 
 
 // Load environment variables from .env file, where API keys and passwords are configured
@@ -21,12 +22,7 @@ const app = express();
 // Connect to Postgres
 const session = require("express-session");
 
-app.use(session({
-  store: new (require("connect-pg-simple")(session))(),
-  secret: process.env.FOO_COOKIE_SECRET,
-  resave: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
-}));
+
 
 // Express configuration
 app.set("port", process.env.PORT || 3000);
@@ -35,6 +31,13 @@ app.set("view engine", "pug");
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+  store: new (require("connect-pg-simple")(session))(),
+  resave: true,
+  autoreconnect: true,
+  saveUninitialized: true,
+  secret: SESSION_SECRET,
+}));
 app.use(expressValidator());
 app.use(passport.initialize());
 app.use(passport.session());
