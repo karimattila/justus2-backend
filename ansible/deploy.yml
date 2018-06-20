@@ -6,7 +6,9 @@
     - "{{ secrets_file_path }}"
   roles:
     - os-setup
-    - php-install
+    # - php-install
+    - node-install
+    - npm-install
     - apache-install
     # - shibboleth-install
     - apache-config
