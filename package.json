@@ -36,6 +36,7 @@
     "express-flash": "0.0.2",
     "express-session": "^1.15.6",
     "express-validator": "^4.3.0",
+    "hoek": "^5.0.3",
     "lodash": "^4.17.10",
     "lusca": "^1.6.0",
     "nodemailer": "^4.6.7",
