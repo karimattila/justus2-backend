@@ -1,0 +1,6 @@
+- name: Install Node
+  yum: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - node
