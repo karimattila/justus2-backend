@@ -3,6 +3,7 @@
     name: "{{ item }}"
     state: latest
   with_items:
+    - gcc
     - nano
     - nmap
   when: environment_id == "vagrant"

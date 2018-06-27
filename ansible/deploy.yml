@@ -6,9 +6,8 @@
     - "{{ secrets_file_path }}"
   roles:
     - os-setup
-    # - php-install
-    - node-install
-    - npm-install
+    - Curl_nodejs
+    - yum_nodejs
     - apache-install
     # - shibboleth-install
     - apache-config
@@ -16,3 +15,5 @@
     - postgres-data
     - justus-backend
     - firewall
+    # - npm-run-build
+    # - npm-start
