@@ -8,6 +8,7 @@ lib-cov
 *.gz
 *.swp
 
+
 pids
 logs
 results
@@ -39,3 +40,7 @@ dist/**/*
 
 # Ignore output from coverage report
 coverage
+
+*~
+.vagrant/*
+.vscode/*
