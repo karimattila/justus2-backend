@@ -16,6 +16,10 @@ Alias "/api" "/opt/justus-backend"
       AllowOverride None
     </Limit>
   </Directory>
+     <Location /nodejs>
+      ProxyPass http://10.10.10.10:3000
+      ProxyPassReverse http://10.10.10.10:3000
+   </Location>
 </VirtualHost>
 
 {% if environment_id == "vagrant" %}
