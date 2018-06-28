@@ -15,6 +15,19 @@ dotenv.config({ path: ".env.example" });
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
 
+// Import fs and ini modules
+const fs = require("fs");
+const ini = require("ini");
+
+// Read ini file for later use
+const dbConfig = ini.parse(fs.readFileSync("/Users/vigallen/Purkki/justus2/justus2-backend/ansible/roles/justus-backend/templates/justus-backend.ini.j2", "utf-8"));
+
+// Use dbSettings.[name] to access wanted variable from the ini file. eg dbSettings.host
+const dbSettings = dbConfig.database;
+
+// Testing if ini file parsing/reading works
+console.log("\n" + dbSettings.host + "\nINI settings test");
+
 // Create Express server
 const app = express();
 
