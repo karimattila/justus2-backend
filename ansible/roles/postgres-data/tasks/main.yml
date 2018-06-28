@@ -27,4 +27,4 @@
   become_user: postgres
   shell: cat /vagrant/sql/{{ item }} | psql -d {{ postgres.databases.application_database.name }} --set ON_ERROR_STOP=1
   with_items: "{{ sql_files_to_execute }}"
-  ignore_errors: true
+  # ignore_errors: true

@@ -10,6 +10,7 @@
     comment: "{{ item.comment }}"
   become: yes
   with_items:
+    - { port: 3000, protocol: tcp, comment: "Open port 3000 for node"}
     - { port: 8080, protocol: tcp, comment: "Open port 8080 for Apache" }
     - { port: 5432, protocol: tcp, comment: "Open port 5432 for pgAdmin" }
 
