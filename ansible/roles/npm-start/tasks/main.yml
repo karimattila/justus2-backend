@@ -1,2 +1,2 @@
 - name: Start the node app
-  shell: npm start
+  shell: cd /vagrant && npm start
