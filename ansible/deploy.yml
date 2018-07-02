@@ -16,4 +16,4 @@
     - justus-backend
     - firewall
     # - npm-run-build
-    # - npm-start
+    - npm-start
