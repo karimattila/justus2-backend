@@ -16,4 +16,5 @@
     - justus-backend
     - firewall
     # - npm-run-build
+    - postgres-session
     - npm-start

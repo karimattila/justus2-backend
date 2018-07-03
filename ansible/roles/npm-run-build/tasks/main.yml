@@ -1,2 +1,0 @@
-- name: Build the node app
-  shell: npm run build

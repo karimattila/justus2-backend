@@ -50,6 +50,7 @@ app.use(session({
 }));
 
 // CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U postgres -d justus"
+// psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
 
 app.set("port", 3000);
 app.set("views", path.join(__dirname, "../views"));
