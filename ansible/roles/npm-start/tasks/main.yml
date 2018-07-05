@@ -1,2 +1,17 @@
-- name: Start the node app
-  shell: cd .. || cd .. || cd vagrant/ || npm start || echo test
+- name: "Install forever (to run Node.js app)."
+  npm:
+  args:
+    name: forever 
+    global: yes 
+    state: present
+
+- name: "Check list of Node.js apps running."
+  command: forever list
+  register: forever_list
+  changed_when: false
+
+
+- name: "Start the Node app"
+  shell: forever start -c "npm start" src
+  args:
+    chdir: /vagrant
