@@ -12,6 +12,6 @@
 
 
 - name: "Start the Node app"
-  shell: forever start -c "npm start" src
+  shell: forever --minUptime 5000 --spinSleepTime 20000 start -c "npm start" src
   args:
     chdir: /vagrant

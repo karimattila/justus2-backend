@@ -17,6 +17,6 @@
     - firewall
     # - npm-run-build
     - postgres-session
-    - npm-start
     - Install-Epel-Release
     - Install-Redis
+    - npm-start
