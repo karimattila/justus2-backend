@@ -1,0 +1,5 @@
+- name: Disable THP support (causes latency and mem usage issues with redis)
+  shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
+  become: yes
+  become_method: sudo
+  become_user: root

@@ -47,6 +47,7 @@
     "passport-local": "^1.0.0",
     "pg-promise": "^8.4.4",
     "pug": "^2.0.3",
+    "redis": "^2.8.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "winston": "^2.4.3"

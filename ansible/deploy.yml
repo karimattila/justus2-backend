@@ -15,8 +15,9 @@
     - postgres-data
     - justus-backend
     - firewall
-    # - npm-run-build
     - postgres-session
     - Install-Epel-Release
     - Install-Redis
+    - Redis-Settings
+    # - Disable-THP
     - npm-start
