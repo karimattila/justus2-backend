@@ -15,6 +15,15 @@ dotenv.config({ path: ".env.example" });
 // Create express server
 const app = express();
 
+// setup redis connection
+const redis = require("redis");
+const client = redis.createClient();
+
+// Check that redis is connected
+client.on("connect", function() {
+  console.log("connected");
+});
+
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
 
