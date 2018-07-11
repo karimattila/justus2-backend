@@ -20,8 +20,11 @@ const redis = require("redis");
 const client = redis.createClient();
 
 // Check that redis is connected
+client.on("error", function() {
+  console.log("Error when connecting to redis");
+});
 client.on("connect", function() {
-  console.log("connected");
+  console.log("Redis is connected at " + "6379");
 });
 
 // Controllers (route handlers)
