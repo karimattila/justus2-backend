@@ -1,6 +1,5 @@
 import express from "express";
 import compression from "compression";  // compresses requests
-import bodyParser from "body-parser";
 import lusca from "lusca";
 import dotenv from "dotenv";
 import flash from "express-flash";
@@ -14,6 +13,9 @@ dotenv.config({ path: ".env.example" });
 
 // Create express server
 const app = express();
+
+// Require bodyparser for every request
+const bodyParser = require("body-parser");
 
 // Setup redis connection
 const redis = require("redis");
@@ -31,8 +33,7 @@ client.on("connect", function() {
 import * as homeController from "./controllers/home";
 
 const session = require ("express-session");
-// Redis, use for later
-// const RedisStore = require("connect-redis")(session);
+
 const pg = require ("pg");
 
 const Pool = require("pg-pool");
@@ -47,6 +48,7 @@ const pgPool = new Pool ({
   password: "postgres",
   host: "localhost",
   port: 5432,
+  max: 10,
 });
 
 app.use(session({
@@ -64,6 +66,9 @@ app.use(session({
 // CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U postgres -d justus"
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
 
+// mport the apiroutes from api/routes file
+const apiRoutes = require("./api/routes/routes");
+
 app.set("port", 3000);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
@@ -75,11 +80,7 @@ app.use(lusca.xssProtection);
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use((req, res, next) => {
-  res.locals.user = req.user;
-  next();
-});
-
+app.use("/api", apiRoutes);
 
 
 
