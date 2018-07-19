@@ -66,7 +66,7 @@ app.use(session({
 // CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U postgres -d justus"
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
 
-// mport the apiroutes from api/routes file
+// Import the apiroutes from api/routes file
 const apiRoutes = require("./api/routes/routes");
 
 app.set("port", 3000);
@@ -81,50 +81,6 @@ app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use("/api", apiRoutes);
-
-
-
-// Import fs and ini modules
-// const fs = require("fs");
-// const ini = require("ini");
-
-// Read ini file for later use
-// const dbConfig = ini.parse(fs.readFileSync("/etc/justus-backend.ini", "utf-8"));
-
-// // Use dbSettings.[name] to access wanted variable from the ini file. eg dbSettings.host
-// const dbSettings = dbConfig.database;
-
-// Express configuration
-// app.set("port", process.env.port || 3000);
-// app.set("views", path.join(__dirname, "../views"));
-// app.set("view engine", "pug");
-// app.use(compression());
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(session({
-//   store: new (require("connect-pg-simple")(session))(),
-//   resave: true,
-//   autoreconnect: true,
-//   saveUninitialized: true,
-//   secret: SESSION_SECRET,
-// }));
-// app.use(expressValidator());
-// app.use(flash());
-// app.use(lusca.xframe("SAMEORIGIN"));
-// app.use(lusca.xssProtection(true));
-// app.use((req, res, next) => {
-//   res.locals.user = req.user;
-//   next();
-// });
-
-//  app.use(
-//    express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
-//  );
-
-/**
- * Primary app routes.
- */
-
 
 
 export default app;
