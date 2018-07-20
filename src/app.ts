@@ -8,6 +8,7 @@ import expressValidator from "express-validator";
 import { SESSION_SECRET } from "./util/secrets";
 
 
+
 // Load environment variables from .env file, where API keys and passwords are configured
 dotenv.config({ path: ".env.example" });
 
@@ -31,6 +32,9 @@ client.on("connect", function() {
 
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
+// import * as apiRouter from "./routes/test";
+const apiRouter = require("./routes/test");
+console.log(apiRouter);
 
 const session = require ("express-session");
 
@@ -67,12 +71,13 @@ app.use(session({
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
 
 // mport the apiroutes from api/routes file
-const apiRoutes = require("./api/routes/routes");
+// const testRouter = require("./api/routes/routes");
 
 app.set("port", 3000);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
 app.get("/", homeController.index);
+app.use("/", apiRouter);
 app.use(expressValidator);
 app.use(flash);
 app.use(lusca.xframe("SAMEORIGIN"));
@@ -80,7 +85,7 @@ app.use(lusca.xssProtection);
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use("/api", apiRoutes);
+
 
 
 

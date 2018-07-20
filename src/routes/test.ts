@@ -14,15 +14,23 @@
 //     });
 //   };
 
+
+
 import { Router, Request, Response } from "express";
 const router: Router = Router();
 
-router.get("/", function(req: Request, res: Response) {
+router.get("/gettest", function(req: Request, res: Response) {
         res.send("Handling GETs for the /api");
 });
 
-router.post("/", function(req: Request, res: Response) {
+router.post("/posttest", function(req: Request, res: Response) {
     res.send("Handling POST for the /api");
 });
 
-export const testRouter: Router = router;
+router.delete("/deltest", function(req: Request, res: Response) {
+    res.send("Handling Dels for the /api");
+});
+
+export = router;
+
+// export router as apiRouter;
