@@ -5,6 +5,7 @@ const router: Router = Router();
 const db = require("../queries");
 
 router.get("/julkaisut", db.getJulkaisut);
+router.post("/julkaisu", db.postJulkaisu);
 
 router.post("/posttest", function(req: Request, res: Response) {
     res.send("Handling POST for the /api");

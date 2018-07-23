@@ -12,16 +12,14 @@ const db = pgp(conString);
 
 
 // Add Query functions here and define them in the module.exports at the end
-
+// Get all julkaisut (just a test)
 
 function getJulkaisut(req: Request, res: Response, next: NextFunction) {
     db.any("select * from julkaisu")
         .then(function(data: any) {
             res.status(200)
                 .json({
-                    status: "success",
-                    data: data,
-                    message: "Retrieved ALL julkaisun"
+                    data: data
     });
 })
         .catch(function(err: any) {
@@ -29,13 +27,29 @@ function getJulkaisut(req: Request, res: Response, next: NextFunction) {
 });
 }
 
+// Post a julkaisu
+
+function postJulkaisu(reg: Request, res: Response, next: NextFunction) {
+    db.none("INSERT INTO julkaisu DEFAULT VALUES")
+    .then(function() {
+        res.status(200)
+        .json({
+            message: "Insert successful"
+        });
+    })
+    .catch(function(err: any) {
+    return next(err);
+});
+}
+
+
 
 
 module.exports = {
     // getTest: getTest,
     // postTest: postTest,
     getJulkaisut: getJulkaisut,
-
+    postJulkaisu: postJulkaisu,
 
 
 };

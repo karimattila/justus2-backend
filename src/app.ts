@@ -69,7 +69,7 @@ app.use(session({
 // CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U postgres -d justus"
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
 
-// mport the apiroutes from api/routes file
+// Import the apiroutes from api/routes file
 // const testRouter = require("./api/routes/routes");
 
 app.set("port", 3000);
