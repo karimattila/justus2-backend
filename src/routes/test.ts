@@ -1,15 +1,10 @@
 import { Router, Request, Response } from "express";
 const router: Router = Router();
-const pgp = require("pg-promise")({
-});
-const cn = "postgres://appaccount:postgres@10.10.10.10:5432/justus";
-const db = pgp(cn);
+// const pgp = require("pg-promise")(options);
+// const cn = "postgres://appaccount:postgres@10.10.10.10:5432/justus";
+const db = require("../queries");
 
-router.get("/gettest", function(req: Request, res: Response) {
-        res.send("Handling GETs for the /api");
-        console.log(db.connect());
-
-});
+router.get("/julkaisut", db.getJulkaisut);
 
 router.post("/posttest", function(req: Request, res: Response) {
     res.send("Handling POST for the /api");
@@ -20,6 +15,6 @@ router.delete("/deltest", function(req: Request, res: Response) {
 });
 
 export = router;
-module.exports = db;
+// module.exports = db;
 
 // export router as apiRouter;
