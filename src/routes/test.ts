@@ -7,6 +7,8 @@ const db = require("../queries");
 router.get("/julkaisut", db.getJulkaisut);
 router.post("/julkaisu", db.postJulkaisu);
 router.get("/julkaisu/:id", db.getAjulkaisu);
+router.post("/org/", db.postOrg);
+router.get("/org/:id", db.getOrgTekija);
 
 router.post("/posttest", function(req: Request, res: Response) {
     res.send("Handling POST for the /api");

@@ -53,6 +53,32 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
     return next(err);
 });
 }
+function getOrgTekija(req: Request, res: Response, next: NextFunction) {
+    db.any("select * from organisaatiotekija where id = ${id}", {
+        id: req.param("id")
+    })
+    .then(function(data: any) {
+        res.status(200)
+            .json({
+                data: data
+            });
+        })
+            .catch(function(err: any) {
+            return next(err);
+    });
+}
+function postOrg(req: Request, res: Response, next: NextFunction) {
+    db.none("INSERT INTO organisaatiotekija VALUES (1, 2, 'Victor', 'Tester', 'csc', 'Seniorez Developez')")
+    .then(function() {
+        res.status(200)
+        .json({
+            message: "Insert successful"
+        });
+    })
+    .catch(function(err: any) {
+    return next(err);
+});
+}
 
 
 
@@ -60,9 +86,11 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
 module.exports = {
     // getTest: getTest,
     // postTest: postTest,
+    getOrgTekija: getOrgTekija,
     getJulkaisut: getJulkaisut,
     getAjulkaisu: getAjulkaisu,
     postJulkaisu: postJulkaisu,
+    postOrg: postOrg,
 
 
 };
