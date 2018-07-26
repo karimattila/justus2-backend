@@ -10,8 +10,8 @@ const conString = "postgres://appaccount:postgres@10.10.10.10:5432/justus";
 const db = pgp(conString);
 
 // Add Query functions here and define them in the module.exports at the end
-// Get all julkaisut (just a test)
 
+// Get all julkaisut (just a test)
 function getJulkaisut(req: Request, res: Response, next: NextFunction) {
     db.any("select * from julkaisu")
         .then(function(data: any) {
@@ -25,6 +25,7 @@ function getJulkaisut(req: Request, res: Response, next: NextFunction) {
 });
 }
 
+// Get a specific julkaisu by "id"
 function getAjulkaisu(req: Request, res: Response, next: NextFunction) {
     db.any("select * from julkaisu where id = ${id}", {
         id: req.param("id")
@@ -39,8 +40,24 @@ function getAjulkaisu(req: Request, res: Response, next: NextFunction) {
                 return next(err);
         });
 }
-// Post a julkaisu
 
+// Get all julkaisut that belong to a specific organisation
+function getJulkaisuListaforOrg(req: Request, res: Response, next: NextFunction) {
+    db.any("select * from julkaisu where organisaatiotunnus = ${organisaatiotunnus}", {
+        organisaatiotunnus: req.param("organisaatiotunnus")
+    })
+        .then(function(data: any) {
+            res.status(200)
+                .json({
+                    data: data
+                });
+            })
+                .catch(function(err: any) {
+                return next(err);
+        });
+}
+
+// Post a julkaisu
 function postJulkaisu(req: Request, res: Response, next: NextFunction) {
     db.none("INSERT INTO julkaisu DEFAULT VALUES")
     .then(function() {
@@ -53,6 +70,7 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
     return next(err);
 });
 }
+// Get org tekija, just a test
 function getOrgTekija(req: Request, res: Response, next: NextFunction) {
     db.any("select * from organisaatiotekija where id = ${id}", {
         id: req.param("id")
@@ -67,6 +85,8 @@ function getOrgTekija(req: Request, res: Response, next: NextFunction) {
             return next(err);
     });
 }
+
+// Post orgtekija, just a test
 function postOrg(req: Request, res: Response, next: NextFunction) {
     db.none("INSERT INTO organisaatiotekija VALUES (1, 2, 'Victor', 'Tester', 'csc', 'Seniorez Developez')")
     .then(function() {
@@ -89,6 +109,7 @@ module.exports = {
     getOrgTekija: getOrgTekija,
     getJulkaisut: getJulkaisut,
     getAjulkaisu: getAjulkaisu,
+    getJulkaisuListaforOrg: getJulkaisuListaforOrg,
     postJulkaisu: postJulkaisu,
     postOrg: postOrg,
 

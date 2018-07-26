@@ -5,8 +5,9 @@ const router: Router = Router();
 const db = require("../queries");
 
 router.get("/julkaisut", db.getJulkaisut);
+router.get("/julkaisut/lista/:organisaatiotunnus", db.getJulkaisuListaforOrg);
 router.post("/julkaisu", db.postJulkaisu);
-router.get("/julkaisu/:id", db.getAjulkaisu);
+router.get("/julkaisu/tiedot/:id", db.getAjulkaisu);
 router.post("/org/", db.postOrg);
 router.get("/org/:id", db.getOrgTekija);
 
