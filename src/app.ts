@@ -33,7 +33,7 @@ client.on("connect", function() {
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
 // import * as apiRouter from "./routes/test";
-const apiRouter = require("./routes/test");
+const apiRouter = require("./routes/routes");
 console.log(apiRouter);
 
 const session = require ("express-session");
