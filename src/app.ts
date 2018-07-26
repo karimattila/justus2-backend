@@ -39,25 +39,9 @@ console.log(apiRouter);
 const session = require ("express-session");
 const RedisStore = require("connect-redis")(session);
 
-const pg = require ("pg");
-
-const Pool = require("pg-pool");
-
-
-
-// Create a pool once per process and reuse it
-const pgPool = new Pool ({
-  database: "justus",
-  user: "appaccount",
-  password: "postgres",
-  host: "localhost",
-  port: 5432,
-  max: 10,
-});
 
 app.use(session({
   store: new RedisStore(),
-  pool: pgPool,
   secret: SESSION_SECRET,
   cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
   resave: true,

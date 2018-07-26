@@ -30,7 +30,7 @@ function getJulkaisut(req: Request, res: Response, next: NextFunction) {
 // Get a specific julkaisu by "id"
 function getAjulkaisu(req: Request, res: Response, next: NextFunction) {
     db.any("select * from julkaisu where id = ${id}", {
-        id: req.param("id")
+        id: req.params.id
     })
         .then(function(data: any) {
             res.status(200)
@@ -46,7 +46,7 @@ function getAjulkaisu(req: Request, res: Response, next: NextFunction) {
 // Get all julkaisut that belong to a specific organisation
 function getJulkaisuListaforOrg(req: Request, res: Response, next: NextFunction) {
     db.any("select * from julkaisu where organisaatiotunnus = ${organisaatiotunnus}", {
-        organisaatiotunnus: req.param("organisaatiotunnus")
+        organisaatiotunnus: req.params.organisaatiotunnus
     })
         .then(function(data: any) {
             res.status(200)
@@ -61,7 +61,7 @@ function getJulkaisuListaforOrg(req: Request, res: Response, next: NextFunction)
 // Get org tekija, just a test
 function getOrgTekija(req: Request, res: Response, next: NextFunction) {
     db.any("select * from organisaatiotekija where id = ${id}", {
-        id: req.param("id")
+        id: req.params.id
     })
     .then(function(data: any) {
         res.status(200)
