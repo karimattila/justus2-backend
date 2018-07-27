@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
+const https = require("https");
 const promise = require("bluebird");
 const options = {
     promiseLib: promise
@@ -80,7 +81,19 @@ function getJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
 // TODO ADD CODE HERE
 }
 function getKielet(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    // TODO ADD CODE
+    https.get("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", (resp: Response) => {
+        let data = "";
+        resp.on("data", (chunk: any) => {
+            data += chunk;
+        });
+        resp.on("end", () => {
+            res.send(JSON.parse(data));
+        });
+    })
+    .on("error", (err: Error) => {
+        console.log("Error: " + err.message);
+    });
 }
 function getValtiot(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
