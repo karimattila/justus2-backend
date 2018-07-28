@@ -10,6 +10,22 @@ const pgp = require("pg-promise")(options);
 const conString = "postgres://appaccount:postgres@10.10.10.10:5432/justus";
 const db = pgp(conString);
 
+// http.get function to use for External API calls to reduce clutter in local API functions
+function HTTPGET (URL: String, res: Response ) {
+    https.get(URL, (resp: Response) => {
+        let data = "";
+        resp.on("data", (chunk: any) => {
+            data += chunk;
+        });
+        resp.on("end", () => {
+            res.send(JSON.parse(data));
+        });
+    })
+    .on("error", (err: Error) => {
+        console.log("Error: " + err.message);
+    });
+}
+
 // Add Query functions here and define them in the module.exports at the end
 
 
@@ -81,22 +97,12 @@ function getJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
 // TODO ADD CODE HERE
 }
 function getKielet(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE
-    https.get("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", (resp: Response) => {
-        let data = "";
-        resp.on("data", (chunk: any) => {
-            data += chunk;
-        });
-        resp.on("end", () => {
-            res.send(JSON.parse(data));
-        });
-    })
-    .on("error", (err: Error) => {
-        console.log("Error: " + err.message);
-    });
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res);
+
 }
 function getValtiot(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res);
+
 }
 function getTaideAlanTyyppiKategoria(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
