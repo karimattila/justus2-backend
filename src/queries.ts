@@ -1,13 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-
+// https will be used for external API calls
 const https = require("https");
 const promise = require("bluebird");
+// Options used for our pgp const
 const options = {
     promiseLib: promise
 };
 
+// Initializing postgres connection by using pg-promise
 const pgp = require("pg-promise")(options);
+// Connection string for the database, move this to a ENV.variable later
 const conString = "postgres://appaccount:postgres@10.10.10.10:5432/justus";
+// const db will be used for all queries etc. db.any, db.none and so on
 const db = pgp(conString);
 
 // http.get function to use for External API calls to reduce clutter in local API functions
@@ -94,33 +98,43 @@ function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
 // TODO ADD CODE HERE
 }
 function getJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
-// TODO ADD CODE HERE
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res);
 }
+// GET kielet from Koodistopalvelu
 function getKielet(req: Request, res: Response, next: NextFunction) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res);
 
 }
+// GET valtiot from koodistopalvelu
 function getValtiot(req: Request, res: Response, next: NextFunction) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res);
 
 }
+// GET taidealantyyppikategoriat from koodistopalvelu
 function getTaideAlanTyyppiKategoria(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res);
 }
+// GET taiteenalat from koodistopalvelu
 function getTaiteenalat(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res);
 }
+// GET tieteenalat from koodistopalvelu
 function getTieteenalat(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res);
 }
 function getUser(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
+// GET tekijanrooli from koodistopalvelu
 function getTekijanRooli(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res);
 }
 function getAvainSanat(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
+}
+// GET alayksikot from koodistopalvelu
+function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res);
 }
 function getJulkaisuSarjat(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
@@ -149,7 +163,7 @@ function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
 
 
 // POST requests
-// Post a julkaisu
+// Post a julkaisu to the database
 function postJulkaisu(req: Request, res: Response, next: NextFunction) {
     db.none("INSERT INTO julkaisu DEFAULT VALUES")
     .then(function() {
@@ -214,6 +228,7 @@ module.exports = {
     getUser: getUser,
     getAvainSanat: getAvainSanat,
     getJulkaisuSarjat: getJulkaisuSarjat,
+    getAlaYksikot: getAlaYksikot,
     getKonferenssinimet: getKonferenssinimet,
     getKustantajat: getKustantajat,
     getJufo: getJufo,
