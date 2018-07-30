@@ -18,23 +18,9 @@ const app = express();
 // Require bodyparser for every request
 const bodyParser = require("body-parser");
 
-// Setup redis connection
-const redis = require("redis");
-const client = redis.createClient();
-
-// Check that redis is connected and log it to the console
-client.on("error", function() {
-  console.log("Error when connecting to redis");
-});
-client.on("connect", function() {
-  console.log("Redis is connected at 6379");
-});
-
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
-// import * as apiRouter from "./routes/test";
 const apiRouter = require("./routes/routes");
-console.log(apiRouter);
 
 const session = require ("express-session");
 const RedisStore = require("connect-redis")(session);
@@ -50,11 +36,8 @@ app.use(session({
 
 }));
 
-// CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U postgres -d justus"
+// CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U appaccount -d justus"
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
-
-// Import the apiroutes from api/routes file
-// const testRouter = require("./api/routes/routes");
 
 app.set("port", 3000);
 app.set("views", path.join(__dirname, "../views"));

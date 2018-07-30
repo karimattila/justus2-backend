@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+const schedule = require("node-schedule");
 // https will be used for external API calls
 const https = require("https");
 const promise = require("bluebird");
@@ -10,19 +11,53 @@ const options = {
 // Initializing postgres connection by using pg-promise
 const pgp = require("pg-promise")(options);
 // Connection string for the database, move this to a ENV.variable later
-const conString = "postgres://appaccount:postgres@10.10.10.10:5432/justus";
+const conString = process.env.PG_URL;
 // const db will be used for all queries etc. db.any, db.none and so on
 const db = pgp(conString);
 
+// Redis client
+const redis = require("redis");
+const client = redis.createClient();
+
+// Check that redis is connected and log it to the console ((USE THIS FUNCTION LATER WHEN NEEDED, THIS IS JUST FOR SHOW))
+// client.on("error", function() {
+//     console.log("Error when connecting to redis");
+//   });
+//   client.on("connect", function() {
+//     console.log("Redis is connected at 6379");
+//   });
+const redisScheduler = schedule.scheduleJob("30 * * * * *", function(res: Response, req: Request, next: NextFunction) {
+    UpdateKoodistopalveluRedis(res, req, next);
+});
+function UpdateKoodistopalveluRedis(res: Response, req: Request, next: NextFunction) {
+    client.on("connect", () => console.log("Connected to redis"),
+    setKielet(res),
+    setJulkaisunTilat(req, res, next),
+    setTaideAlanTyyppiKategoria(req, res, next),
+    setTaiteenalat(req, res, next),
+    setTieteenalat(req, res, next),
+    setTekijanRooli(req, res, next),
+    setAlaYksikot(req, res, next),
+    setValtiot(req, res, next),
+    TestFunction());
+}
+
+function TestFunction() {
+    console.log("Testing scheduler");
+}
 // http.get function to use for External API calls to reduce clutter in local API functions
-function HTTPGET (URL: String, res: Response ) {
+function HTTPGET (URL: String, res: Response, redisInfo: String ) {
     https.get(URL, (resp: Response) => {
         let data = "";
         resp.on("data", (chunk: any) => {
             data += chunk;
         });
         resp.on("end", () => {
-            res.send(JSON.parse(data));
+            // res.send(JSON.parse(data));
+            client.set(redisInfo, data);
+            client.get(redisInfo, function(err: Error, reply: any) {
+                console.log(reply.toString());
+            });
         });
     })
     .on("error", (err: Error) => {
@@ -32,7 +67,32 @@ function HTTPGET (URL: String, res: Response ) {
 
 // Add Query functions here and define them in the module.exports at the end
 
+// Set values into Redis from koodistopalvelu
 
+function setJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res, "getJulkaisunTilat");
+}
+function setKielet(res: Response) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res, "getKielet");
+}
+function setValtiot(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res, "getValtiot");
+}
+function setTaideAlanTyyppiKategoria(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res, "getTaideAlanTyyppiKategoria");
+}
+function setTaiteenalat(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res, "getTaiteenalat");
+}
+function setTieteenalat(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat");
+}
+function setTekijanRooli(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli");
+}
+function setAlaYksikot(req: Request, res: Response, next: NextFunction) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlaYksikot");
+}
 // All GET requests first
 // Get all julkaisut
 function getJulkaisut(req: Request, res: Response, next: NextFunction) {
@@ -94,47 +154,50 @@ function getOrgTekija(req: Request, res: Response, next: NextFunction) {
             return next(err);
     });
 }
-function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
-// TODO ADD CODE HERE
-}
 function getJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res);
+    client.on("connect"), () => console.log("Connected to redis");
+    client.get("getJulkaisunTilat", function(err: Error, reply: any) {
+        res.status(200)
+            .json({
+                data: reply
+            });
+    });
 }
-// GET kielet from Koodistopalvelu
+function getTekijanRooli(req: Request, res: Response, next: NextFunction) {
+    client.on("connect"), () => console.log("Connected to redis");
+    client.get("getJulkaisunTilat");
+    client.quit();
+}
 function getKielet(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res);
-
+    client.on("connect"), () => console.log("Connected to redis");
+    client.get("getJulkaisunTilat");
+    client.quit();
 }
-// GET valtiot from koodistopalvelu
 function getValtiot(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res);
-
+    client.on("connect"), () => console.log("Connected to redis");
+    client.get("getJulkaisunTilat");
+    client.quit();
 }
-// GET taidealantyyppikategoriat from koodistopalvelu
 function getTaideAlanTyyppiKategoria(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res);
+    // TODO ADD CODE HERE
 }
-// GET taiteenalat from koodistopalvelu
 function getTaiteenalat(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res);
+    // TODO ADD CODE HERE
 }
-// GET tieteenalat from koodistopalvelu
 function getTieteenalat(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res);
+    // TODO ADD CODE HERE
+}
+function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
+    // TODO ADD CODE HERE
+}
+function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
+    // TODO ADD CODE HERE
 }
 function getUser(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
-// GET tekijanrooli from koodistopalvelu
-function getTekijanRooli(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res);
-}
 function getAvainSanat(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
-}
-// GET alayksikot from koodistopalvelu
-function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res);
 }
 function getJulkaisuSarjat(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
@@ -157,8 +220,9 @@ function getJulkaisutVIRTACF(req: Request, res: Response, next: NextFunction) {
 function getJulkaisuVirta(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
-function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
+function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
+
 }
 
 
