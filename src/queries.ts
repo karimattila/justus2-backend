@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { Result } from "../node_modules/express-validator/shared-typings";
-import { json } from "../node_modules/@types/body-parser";
 const schedule = require("node-schedule");
 // https will be used for external API calls
 const https = require("https");
 const promise = require("bluebird");
+const kp = require("./koodistopalvelu");
 // Options used for our pgp const
 const options = {
     promiseLib: promise
@@ -21,34 +20,10 @@ const db = pgp(conString);
 const redis = require("redis");
 const client = redis.createClient();
 
-// Check that redis is connected and log it to the console ((USE THIS FUNCTION LATER WHEN NEEDED, THIS IS JUST FOR SHOW))
-// client.on("error", function() {
-//     console.log("Error when connecting to redis");
-//   });
-//   client.on("connect", function() {
-//     console.log("Redis is connected at 6379");
-//   });
+// Scheduler for updating Koodistopalvelu data inside redis
+// Each star represents a different value, beginning from second and ending in day
+// So if we want to update it once a day at midnight we would use ("* 0 0 * * *")
 
-const redisScheduler = schedule.scheduleJob("30 * * * * *", function(res: Response) {
-    UpdateKoodistopalveluRedis(res);
-});
-
-function UpdateKoodistopalveluRedis(res: Response) {
-    client.on("connect", () => console.log("Connected to redis"),
-    setKielet(res),
-    setJulkaisunTilat(res),
-    setTaideAlanTyyppiKategoria(res),
-    setTaiteenalat(res),
-    setTieteenalat(res),
-    setTekijanRooli(res),
-    setAlaYksikot(res),
-    setValtiot(res),
-    TestFunction());
-}
-
-function TestFunction() {
-    console.log("Testing scheduler");
-}
 const getRedis = (rediskey: string, success: any, error: any) => {
     client.get(rediskey, function (err: Error, reply: any) {
         if (!err) {
@@ -59,53 +34,8 @@ const getRedis = (rediskey: string, success: any, error: any) => {
         }
     });
 };
-// http.get function to use for External API calls to reduce clutter in local API functions
-function HTTPGET (URL: String, res: Response, redisInfo: String ) {
-    https.get(URL, (resp: Response) => {
-        let data = "";
-        resp.on("data", (chunk: any) => {
-            data += chunk;
-        });
-        resp.on("end", () => {
-            // res.send(JSON.parse(data));
-            client.set(redisInfo, data);
-            console.log("Set info for " + redisInfo + " to redis successfully!");
-        });
-    })
-    .on("error", (err: Error) => {
-        console.log("Error: " + err.message);
-    });
-}
 
 // Add Query functions here and define them in the module.exports at the end
-
-// Set values into Redis from koodistopalvelu
-
-function setJulkaisunTilat(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res, "getJulkaisunTilat");
-}
-function setKielet(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res, "getKielet");
-}
-function setValtiot(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res, "getValtiot");
-}
-function setTaideAlanTyyppiKategoria(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res, "getTaideAlanTyyppiKategoria");
-}
-function setTaiteenalat(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res, "getTaiteenalat");
-}
-function setTieteenalat(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat");
-}
-function setTekijanRooli(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli");
-}
-function setAlaYksikot(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlaYksikot");
-}
-
 // All GET requests first
 // Get all julkaisut
 function getJulkaisut(req: Request, res: Response, next: NextFunction) {
@@ -242,6 +172,22 @@ function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
     console.log("Something went wrong");
 });
 }
+
+// NOT SURE IF NEEDED
+
+// function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
+//         client.get("getAlaYksikot", function(err: Error, reply: any) {
+//             if (!err) {
+//                 res.status(200).json({
+//                     message: JSON.parse(reply)
+//                 });
+//             }
+//             else {
+//                 res.send("Something went wrong");
+//             }
+//         });
+// }
+
 function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
@@ -271,10 +217,6 @@ function getJulkaisutVIRTACF(req: Request, res: Response, next: NextFunction) {
 }
 function getJulkaisuVirta(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
-}
-function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
-
 }
 
 
@@ -344,7 +286,8 @@ module.exports = {
     getUser: getUser,
     getAvainSanat: getAvainSanat,
     getJulkaisuSarjat: getJulkaisuSarjat,
-    getAlaYksikot: getAlaYksikot,
+    // Perhaps not neededs
+    // getAlaYksikot: getAlaYksikot,
     getKonferenssinimet: getKonferenssinimet,
     getKustantajat: getKustantajat,
     getJufo: getJufo,

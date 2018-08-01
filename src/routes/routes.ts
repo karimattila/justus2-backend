@@ -19,7 +19,8 @@ router.get("/haku/valtiot", db.getValtiot);
 router.get("/haku/taidealantyyppikategoria", db.getTaideAlanTyyppiKategoria);
 router.get("/haku/taiteenalat", db.getTaiteenalat);
 router.get("/haku/tieteenalat", db.getTieteenalat);
-router.get("/haku/alayksikot", db.getAlaYksikot);
+// NOT SURE IF NEEDED
+// router.get("/haku/alayksikot", db.getAlaYksikot);
 router.get("/haku/avainsanat?q={keyword}", db.getAvainSanat);
 router.get("/haku/julkaisusarjat/?q={keyword}", db.getJulkaisuSarjat);
 router.get("/haku/konferenssinnimet/?q={keyword}", db.getKonferenssinimet);
