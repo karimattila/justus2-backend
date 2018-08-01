@@ -33,7 +33,7 @@ router.get("/user", db.getUser);
 
 // POST requests here
 router.post("/julkaisu", db.postJulkaisu);
-router.post("/org/", db.postOrg);
+router.post("/org", db.postOrg);
 router.post("/admin/impersonate", db.postAdminImpersonate);
 router.post("/admin/action", db.postAdminAction);
 

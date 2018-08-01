@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { Result } from "../node_modules/express-validator/shared-typings";
+import { json } from "../node_modules/@types/body-parser";
 const schedule = require("node-schedule");
 // https will be used for external API calls
 const https = require("https");
@@ -26,25 +28,37 @@ const client = redis.createClient();
 //   client.on("connect", function() {
 //     console.log("Redis is connected at 6379");
 //   });
-const redisScheduler = schedule.scheduleJob("30 * * * * *", function(res: Response, req: Request, next: NextFunction) {
-    UpdateKoodistopalveluRedis(res, req, next);
+
+const redisScheduler = schedule.scheduleJob("30 * * * * *", function(res: Response) {
+    UpdateKoodistopalveluRedis(res);
 });
-function UpdateKoodistopalveluRedis(res: Response, req: Request, next: NextFunction) {
+
+function UpdateKoodistopalveluRedis(res: Response) {
     client.on("connect", () => console.log("Connected to redis"),
     setKielet(res),
-    setJulkaisunTilat(req, res, next),
-    setTaideAlanTyyppiKategoria(req, res, next),
-    setTaiteenalat(req, res, next),
-    setTieteenalat(req, res, next),
-    setTekijanRooli(req, res, next),
-    setAlaYksikot(req, res, next),
-    setValtiot(req, res, next),
+    setJulkaisunTilat(res),
+    setTaideAlanTyyppiKategoria(res),
+    setTaiteenalat(res),
+    setTieteenalat(res),
+    setTekijanRooli(res),
+    setAlaYksikot(res),
+    setValtiot(res),
     TestFunction());
 }
 
 function TestFunction() {
     console.log("Testing scheduler");
 }
+const getRedis = (rediskey: string, success: any, error: any) => {
+    client.get(rediskey, function (err: Error, reply: any) {
+        if (!err) {
+            success(reply);
+        }
+        else {
+            error(err);
+        }
+    });
+};
 // http.get function to use for External API calls to reduce clutter in local API functions
 function HTTPGET (URL: String, res: Response, redisInfo: String ) {
     https.get(URL, (resp: Response) => {
@@ -55,9 +69,7 @@ function HTTPGET (URL: String, res: Response, redisInfo: String ) {
         resp.on("end", () => {
             // res.send(JSON.parse(data));
             client.set(redisInfo, data);
-            client.get(redisInfo, function(err: Error, reply: any) {
-                console.log(reply.toString());
-            });
+            console.log("Set info for " + redisInfo + " to redis successfully!");
         });
     })
     .on("error", (err: Error) => {
@@ -69,41 +81,42 @@ function HTTPGET (URL: String, res: Response, redisInfo: String ) {
 
 // Set values into Redis from koodistopalvelu
 
-function setJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
+function setJulkaisunTilat(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res, "getJulkaisunTilat");
 }
 function setKielet(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res, "getKielet");
 }
-function setValtiot(req: Request, res: Response, next: NextFunction) {
+function setValtiot(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res, "getValtiot");
 }
-function setTaideAlanTyyppiKategoria(req: Request, res: Response, next: NextFunction) {
+function setTaideAlanTyyppiKategoria(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res, "getTaideAlanTyyppiKategoria");
 }
-function setTaiteenalat(req: Request, res: Response, next: NextFunction) {
+function setTaiteenalat(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res, "getTaiteenalat");
 }
-function setTieteenalat(req: Request, res: Response, next: NextFunction) {
+function setTieteenalat(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat");
 }
-function setTekijanRooli(req: Request, res: Response, next: NextFunction) {
+function setTekijanRooli(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli");
 }
-function setAlaYksikot(req: Request, res: Response, next: NextFunction) {
+function setAlaYksikot(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlaYksikot");
 }
+
 // All GET requests first
 // Get all julkaisut
 function getJulkaisut(req: Request, res: Response, next: NextFunction) {
     db.any("select * from julkaisu")
-        .then(function(data: any) {
+        .then((data: any) => {
             res.status(200)
                 .json({
                     data: data
     });
 })
-        .catch(function(err: any) {
+        .catch((err: any) => {
         return next(err);
 });
 }
@@ -113,13 +126,13 @@ function getAjulkaisu(req: Request, res: Response, next: NextFunction) {
     db.any("select * from julkaisu where id = ${id}", {
         id: req.params.id
     })
-        .then(function(data: any) {
+        .then((data: any) => {
             res.status(200)
                 .json({
                     data: data
                 });
             })
-                .catch(function(err: any) {
+                .catch((err: any) => {
                 return next(err);
         });
 }
@@ -129,13 +142,13 @@ function getJulkaisuListaforOrg(req: Request, res: Response, next: NextFunction)
     db.any("select * from julkaisu where organisaatiotunnus = ${organisaatiotunnus}", {
         organisaatiotunnus: req.params.organisaatiotunnus
     })
-        .then(function(data: any) {
+        .then((data: any) => {
             res.status(200)
                 .json({
                     data: data
                 });
             })
-                .catch(function(err: any) {
+                .catch((err: any) => {
                 return next(err);
         });
 }
@@ -144,53 +157,92 @@ function getOrgTekija(req: Request, res: Response, next: NextFunction) {
     db.any("select * from organisaatiotekija where id = ${id}", {
         id: req.params.id
     })
-    .then(function(data: any) {
+    .then((data: any) => {
         res.status(200)
             .json({
                 data: data
             });
         })
-            .catch(function(err: any) {
+            .catch((err: any) => {
             return next(err);
     });
 }
+
+// KOODISTOPALVELU GETS
+
 function getJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
-    client.on("connect"), () => console.log("Connected to redis");
-    client.get("getJulkaisunTilat", function(err: Error, reply: any) {
-        res.status(200)
-            .json({
-                data: reply
-            });
-    });
+    getRedis("getJulkaisunTilat", function success(reply: any) {
+        res.status(200).json({
+            message: JSON.parse(reply)
+        });
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
 }
 function getTekijanRooli(req: Request, res: Response, next: NextFunction) {
-    client.on("connect"), () => console.log("Connected to redis");
-    client.get("getJulkaisunTilat");
-    client.quit();
+    getRedis("getTekijanRooli", function success(reply: any) {
+        res.status(200).json({
+            message: JSON.parse(reply)
+        });
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
 }
 function getKielet(req: Request, res: Response, next: NextFunction) {
-    client.on("connect"), () => console.log("Connected to redis");
-    client.get("getJulkaisunTilat");
-    client.quit();
+    getRedis("getKielet", function success(reply: any) {
+        res.status(200).json({
+            message: JSON.parse(reply)
+        });
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
 }
 function getValtiot(req: Request, res: Response, next: NextFunction) {
-    client.on("connect"), () => console.log("Connected to redis");
-    client.get("getJulkaisunTilat");
-    client.quit();
+        getRedis("getValtiot", function success(reply: any) {
+            res.status(200).json({
+                message: JSON.parse(reply)
+            });
+    }, function error(err: Error) {
+        console.log("Something went wrong");
+    });
 }
 function getTaideAlanTyyppiKategoria(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    getRedis("getTaideAlanTyyppiKategoria", function success(reply: any) {
+        res.status(200).json({
+            message: JSON.parse(reply)
+        });
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
 }
 function getTaiteenalat(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    getRedis("getTaiteenalat", function success(reply: any) {
+        res.status(200).json({
+            message: JSON.parse(reply)
+        });
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
 }
 function getTieteenalat(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
-}
-function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+    getRedis("getTieteenalat", function success(reply: any) {
+        res.status(200).json({
+           message: JSON.parse(reply)
+        });
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
 }
 function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
+    getRedis("getJulkaisunLuokat", function success(reply: any) {
+        res.status(200).json({
+           message: JSON.parse(reply)
+        });
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
+}
+function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
 function getUser(req: Request, res: Response, next: NextFunction) {
@@ -244,7 +296,7 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
 
 // Post orgtekija, just a test
 function postOrg(req: Request, res: Response, next: NextFunction) {
-    db.none("INSERT INTO organisaatiotekija VALUES (1, 2, 'Victor', 'Tester', 'csc', 'Seniorez Developez')")
+    db.none("INSERT INTO organisaatiotekija VALUES (2, 5, 'Victor', 'Tester', 'csc', 'Seniorez Developez')")
     .then(function() {
         res.status(200)
         .json({

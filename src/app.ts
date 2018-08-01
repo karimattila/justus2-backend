@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import compression from "compression";  // compresses requests
 import lusca from "lusca";
 import dotenv from "dotenv";
@@ -21,24 +21,25 @@ const bodyParser = require("body-parser");
 // Controllers (route handlers)
 import * as homeController from "./controllers/home";
 const apiRouter = require("./routes/routes");
-
 const session = require ("express-session");
 const RedisStore = require("connect-redis")(session);
 
 
-app.use(session({
-  store: new RedisStore(),
-  secret: SESSION_SECRET,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
-  resave: true,
-  autoreconnect: true,
-  saveUninitialized: true,
+// app.use(session({
+//   store: new RedisStore(),
+//   secret: SESSION_SECRET,
+//   cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+//   resave: true,
+//   autoreconnect: true,
+//   saveUninitialized: true,
 
-}));
+// }));
 
 // CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U appaccount -d justus"
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
-
+app.use(compression());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.set("port", 3000);
 app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "pug");
@@ -48,9 +49,9 @@ app.use(expressValidator);
 app.use(flash);
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection);
-app.use(compression());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+// app.use(compression());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended: true}));
 
 
 
