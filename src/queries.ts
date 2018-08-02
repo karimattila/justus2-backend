@@ -23,7 +23,6 @@ const client = redis.createClient();
 // Scheduler for updating Koodistopalvelu data inside redis
 // Each star represents a different value, beginning from second and ending in day
 // So if we want to update it once a day at midnight we would use ("* 0 0 * * *")
-
 const getRedis = (rediskey: string, success: any, error: any) => {
     client.get(rediskey, function (err: Error, reply: any) {
         if (!err) {
@@ -85,7 +84,11 @@ function getJulkaisuListaforOrg(req: Request, res: Response, next: NextFunction)
 // Get org tekija, just a test
 function getOrgTekija(req: Request, res: Response, next: NextFunction) {
     db.any("select * from organisaatiotekija where id = ${id}", {
-        id: req.params.id
+        id : req.params.id
+    //     test: {
+    //     id: req.params.id,
+    //     arvo: req.body.arvo ? req.body.arvo = "",
+    // }
     })
     .then((data: any) => {
         res.status(200)
@@ -120,6 +123,10 @@ function getTekijanRooli(req: Request, res: Response, next: NextFunction) {
 }
 function getKielet(req: Request, res: Response, next: NextFunction) {
     getRedis("getKielet", function success(reply: any) {
+        const wth = JSON.parse(reply);
+        console.log(wth.koodiArvo);
+        console.log(wth.koodiUri);
+        console.log(wth.metadata);
         res.status(200).json({
             message: JSON.parse(reply)
         });
@@ -222,12 +229,80 @@ function getJulkaisuVirta(req: Request, res: Response, next: NextFunction) {
 
 // POST requests
 // Post a julkaisu to the database
+// Catch the JSON body and parse it so that we can insert the values into postgres
 function postJulkaisu(req: Request, res: Response, next: NextFunction) {
+    const tekijaarray = req.body.organisaatiotekija.map((e: any) => {
+        return {
+        id: e.id,
+        etunimet: e.etunimet,
+        sukunimi: e.sukunimi,
+        orcid: e.orcid,
+        rooli: e.rooli,
+        alayksikko: e.alayksikko
+        };
+    });
+    const taidealantyyppikategoria = req.body.taidealantyyppikategoria.map((e: any) => {
+        return e;
+    });
+    const avainsanat = req.body.avainsanat.map((e: any) =>  e);
+    const tieteenala = req.body.tieteenala.map((e: any) => {
+        return {
+        tieteenalakoodi: e.tieteenalakoodi,
+        jnro: e.jnro,
+        };
+    });
+    const lisatieto = {
+        julkaisuvuodenlisatieto: req.body.lisatieto.julkaisuvuodenlisatieto,
+        tapahtuma: req.body.lisatieto.tapahtuma,
+        julkistamispaikkakunta: req.body.lisatieto.julkistamispaikkakunta,
+        muutunniste: req.body.lisatieto.muutunniste,
+    };
+    const Julkaisu = {
+        organisaatiotunnus: req.body.julkaisu.organisaatiotunnus,
+        julkaisutyyppi: req.body.julkaisu.julkaisutyyppi,
+        julkaisuvuosi: req.body.julkaisu.julkaisuvuosi,
+        julkaisunnimi: req.body.julkaisu.julkaisunnimi,
+        tekijat: req.body.julkaisu.tekijat,
+        julkaisuntekijoidenlukumaara: req.body.julkaisu.julkaisuntekijoidenlukumaara,
+        konferenssinvakiintunutnimi: req.body.julkaisu.konferenssinvakiintunutnimi,
+        emojulkaisunnimi: req.body.julkaisu.emojulkaisunnimi,
+        isbn: req.body.julkaisu.isbn,
+        emojulkaisuntoimittajat: req.body.julkaisu.emojulkaisuntoimittajat,
+        lehdenjulkaisusarjannimi: req.body.julkaisu.lehdenjulkaisusarjannimi,
+        issn: req.body.julkaisu.issn,
+        volyymi: req.body.julkaisu.volyymi,
+        numero: req.body.julkaisu.numero,
+        sivut: req.body.julkaisu.sivut,
+        artikkelinumero: req.body.julkaisu.artikkelinumero,
+        kustantaja: req.body.julkaisu.kustantaja,
+        julkaisunkustannuspaikka: req.body.julkaisu.julkaisunkustannuspaikka,
+        julkaisunkieli: req.body.julkaisu.julkaisunkieli,
+        julkaisunkansainvalisyys: req.body.julkaisu.julkaisunkansainvalisyys,
+        julkaisumaa: req.body.julkaisu.julkaisumaa,
+        kansainvalinenyhteisjulkaisu: req.body.julkaisu.kansainvalinenyhteisjulkaisu,
+        yhteisjulkaisuyrityksenkanssa: req.body.julkaisu.yhteisjulkaisuyrityksenkanssa,
+        doitunniste: req.body.julkaisu.doitunniste,
+        pysyvaverkkoosoite: req.body.julkaisu.pysyvaverkkoosoite,
+        julkaisurinnakkaistallennettu: req.body.julkaisu.avoinsaatavuus,
+        avoinsaatavuus: req.body.julkaisu.julkaisurinnakkaistallennettu,
+        rinnakkaistallennetunversionverkkoosoite: req.body.julkaisu.rinnakkaistallennetunversionverkkoosoite,
+        lisatieto: req.body.julkaisu.lisatieto,
+        jufotunnus: req.body.julkaisu.jufotunnus,
+        jufoluokitus: req.body.julkaisu.jufoluokitus,
+        julkaisuntila: req.body.julkaisu.julkaisuntila,
+        username: req.body.julkaisu.username,
+        modified: req.body.julkaisu.modified,
+    };
     db.none("INSERT INTO julkaisu DEFAULT VALUES")
     .then(function() {
         res.status(200)
         .json({
-            message: "Insert successful"
+            Julkaisu: Julkaisu,
+            organisaatiotekija: tekijaarray,
+            tieteenala: tieteenala,
+            avainsanat: avainsanat,
+            taidealantyyppikategoria: taidealantyyppikategoria,
+            lisatieto: lisatieto
         });
     })
     .catch(function(err: any) {

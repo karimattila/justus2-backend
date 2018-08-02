@@ -6,6 +6,9 @@ const https = require("https");
 const redis = require("redis");
 const client = redis.createClient();
 
+// REMEMBER THIS
+// (node:1239) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 connect listeners added. Use emitter.setMaxListeners() to increase limit
+
 // Scheduler for updating Koodistopalvelu data inside redis
 // Each star represents a different value, beginning from second and ending in day
 // So if we want to update it once a day at midnight we would use ("* 0 0 * * *")

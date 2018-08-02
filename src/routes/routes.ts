@@ -3,8 +3,6 @@ import { Router, Request, Response } from "express";
 const router: Router = Router();
 // Importing db const from queries.ts
 const db = require("../queries");
-
-
 // Define the routes here, all will have the prexix /api/ as per the proxypass in the apache settings
 // GET requests here
 router.get("/julkaisut/lista/all", db.getJulkaisut);
