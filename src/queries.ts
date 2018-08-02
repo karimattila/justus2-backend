@@ -231,9 +231,10 @@ function getJulkaisuVirta(req: Request, res: Response, next: NextFunction) {
 // Post a julkaisu to the database
 // Catch the JSON body and parse it so that we can insert the values into postgres
 function postJulkaisu(req: Request, res: Response, next: NextFunction) {
-    const tekijaarray = req.body.organisaatiotekija.map((e: any) => {
+    const organisaatiotekija = req.body.organisaatiotekija.map((e: any) => {
         return {
-        id: e.id,
+        // ei ole tietoa käytetäänkö tätä ID:tä POST: reqissä
+        // id: e.id,
         etunimet: e.etunimet,
         sukunimi: e.sukunimi,
         orcid: e.orcid,
@@ -241,10 +242,9 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
         alayksikko: e.alayksikko
         };
     });
-    const taidealantyyppikategoria = req.body.taidealantyyppikategoria.map((e: any) => {
-        return e;
-    });
+    const taidealantyyppikategoria = req.body.taidealantyyppikategoria.map((e: any) =>  e);
     const avainsanat = req.body.avainsanat.map((e: any) =>  e);
+    const taiteenala = req.body.taiteenala.map((e: any) =>  e);
     const tieteenala = req.body.tieteenala.map((e: any) => {
         return {
         tieteenalakoodi: e.tieteenalakoodi,
@@ -297,9 +297,10 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
     .then(function() {
         res.status(200)
         .json({
-            Julkaisu: Julkaisu,
-            organisaatiotekija: tekijaarray,
+            julkaisu: Julkaisu,
+            organisaatiotekija: organisaatiotekija,
             tieteenala: tieteenala,
+            taiteenala: taiteenala,
             avainsanat: avainsanat,
             taidealantyyppikategoria: taidealantyyppikategoria,
             lisatieto: lisatieto
