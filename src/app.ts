@@ -8,7 +8,6 @@ import expressValidator from "express-validator";
 import { SESSION_SECRET } from "./util/secrets";
 
 
-
 // Load environment variables from .env file, where API keys and passwords are configured
 dotenv.config({ path: ".env.example" });
 
@@ -37,6 +36,7 @@ const RedisStore = require("connect-redis")(session);
 
 // CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U appaccount -d justus"
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
+
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));

@@ -6,13 +6,16 @@ const https = require("https");
 const redis = require("redis");
 const client = redis.createClient();
 
+// Prefix for objecthandler import
+const OH = require("./objecthandlers");
+
 // REMEMBER THIS
 // (node:1239) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 connect listeners added. Use emitter.setMaxListeners() to increase limit
 
 // Scheduler for updating Koodistopalvelu data inside redis
 // Each star represents a different value, beginning from second and ending in day
 // So if we want to update it once a day at midnight we would use ("* 0 0 * * *")
-const redisScheduler = schedule.scheduleJob("30 * * * * *", function(res: Response) {
+schedule.scheduleJob("30 * * * * *", function(res: Response) {
     UpdateKoodistopalveluRedis(res);
 });
 
@@ -42,7 +45,7 @@ function HTTPGET (URL: String, res: Response, redisInfo: String ) {
             data += chunk;
         });
         resp.on("end", () => {
-            // res.send(JSON.parse(data));
+            const newdata = JSON.parse(data);
             client.set(redisInfo, data);
             console.log("Set info for " + redisInfo + " to redis successfully!");
         });
@@ -51,15 +54,33 @@ function HTTPGET (URL: String, res: Response, redisInfo: String ) {
         console.log("Error: " + err.message);
     });
 }
+// This function will replace old one when all objecthandlers are done
+function HTTPGET2 (URL: String, res: Response, redisInfo: String, objecthandler: Function ) {
+    https.get(URL, (resp: Response) => {
+        let data = "";
+        resp.on("data", (chunk: any) => {
+            data += chunk;
+        });
+        resp.on("end", () => {
+            // res.send(JSON.parse(data));
+            const newdata = JSON.parse(data);
+            client.set(redisInfo, JSON.stringify(objecthandler(newdata)));
+            console.log("Set info for " + redisInfo + " to redis successfully!");
+        });
+    })
+    .on("error", (err: Error) => {
+        console.log("Error: " + err.message);
+    });
+}
 
-function setJulkaisunTilat(res: Response) {
+function setJulkaisunTilat(res: Response): void {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res, "getJulkaisunTilat");
 }
 function setKielet(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res, "getKielet");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res, "getKielet", OH.ObjectHandlerKielet);
 }
 function setValtiot(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res, "getValtiot");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res, "getValtiot", OH.ObjectHandlerValtiot);
 }
 function setTaideAlanTyyppiKategoria(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res, "getTaideAlanTyyppiKategoria");
@@ -71,7 +92,10 @@ function setTieteenalat(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat");
 }
 function setTekijanRooli(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli", OH.ObjectHandlerRoolit);
+}
+function setJulkaisunLuokat(res: Response) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
 }
 // NOT SURE IF NEEDED
 // function setAlaYksikot(res: Response) {
@@ -93,9 +117,6 @@ function setJufoTiedot(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
 }
 function setJufotISSN(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
-}
-function setJulkaisunLuokat(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
 }
 

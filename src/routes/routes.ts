@@ -9,6 +9,7 @@ router.get("/julkaisut/lista/all", db.getJulkaisut);
 router.get("/julkaisut/lista/:organisaatiotunnus", db.getJulkaisuListaforOrg);
 router.get("/julkaisu/tiedot/:id", db.getAjulkaisu);
 router.get("/org/:id", db.getOrgTekija);
+// KoodistoPalvelu routes
 router.get("/haku/julkaisunluokat", db.getJulkaisunLuokat);
 router.get("/haku/julkaisuntilat", db.getJulkaisunTilat);
 router.get("/haku/tekijanrooli", db.getTekijanRooli);

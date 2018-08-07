@@ -105,76 +105,72 @@ function getOrgTekija(req: Request, res: Response, next: NextFunction) {
 
 function getJulkaisunTilat(req: Request, res: Response, next: NextFunction) {
     getRedis("getJulkaisunTilat", function success(reply: any) {
-        res.status(200).json({
-            message: JSON.parse(reply)
-        });
+        res.status(200).json(
+            JSON.parse(reply)
+        );
 }, function error(err: Error) {
     console.log("Something went wrong");
 });
 }
 function getTekijanRooli(req: Request, res: Response, next: NextFunction) {
     getRedis("getTekijanRooli", function success(reply: any) {
-        res.status(200).json({
-            message: JSON.parse(reply)
-        });
+        res.status(200).json(
+            JSON.parse(reply)
+        );
 }, function error(err: Error) {
     console.log("Something went wrong");
 });
 }
 function getKielet(req: Request, res: Response, next: NextFunction) {
     getRedis("getKielet", function success(reply: any) {
-        const wth = JSON.parse(reply);
-        console.log(wth.koodiArvo);
-        console.log(wth.koodiUri);
-        console.log(wth.metadata);
-        res.status(200).json({
-            message: JSON.parse(reply)
-        });
+        res.status(200).json(
+            JSON.parse(reply)
+        );
 }, function error(err: Error) {
     console.log("Something went wrong");
 });
 }
 function getValtiot(req: Request, res: Response, next: NextFunction) {
         getRedis("getValtiot", function success(reply: any) {
-            res.status(200).json({
-                message: JSON.parse(reply)
-            });
+            res.status(200).json(
+                JSON.parse(reply)
+            );
     }, function error(err: Error) {
         console.log("Something went wrong");
     });
 }
 function getTaideAlanTyyppiKategoria(req: Request, res: Response, next: NextFunction) {
     getRedis("getTaideAlanTyyppiKategoria", function success(reply: any) {
-        res.status(200).json({
-            message: JSON.parse(reply)
-        });
+        res.status(200).json(
+            JSON.parse(reply)
+        );
 }, function error(err: Error) {
     console.log("Something went wrong");
 });
 }
 function getTaiteenalat(req: Request, res: Response, next: NextFunction) {
     getRedis("getTaiteenalat", function success(reply: any) {
-        res.status(200).json({
-            message: JSON.parse(reply)
-        });
+        res.status(200).json(
+            JSON.parse(reply)
+        );
 }, function error(err: Error) {
     console.log("Something went wrong");
 });
 }
 function getTieteenalat(req: Request, res: Response, next: NextFunction) {
     getRedis("getTieteenalat", function success(reply: any) {
-        res.status(200).json({
-           message: JSON.parse(reply)
-        });
+        res.status(200).json(
+           JSON.parse(reply)
+        );
 }, function error(err: Error) {
     console.log("Something went wrong");
 });
 }
 function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
     getRedis("getJulkaisunLuokat", function success(reply: any) {
-        res.status(200).json({
-           message: JSON.parse(reply)
-        });
+        res.status(200).json(
+           JSON.parse(reply)
+        );
 }, function error(err: Error) {
     console.log("Something went wrong");
 });
