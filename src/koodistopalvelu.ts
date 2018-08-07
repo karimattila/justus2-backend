@@ -62,8 +62,9 @@ function HTTPGET2 (URL: String, res: Response, redisInfo: String, objecthandler:
             data += chunk;
         });
         resp.on("end", () => {
-            // res.send(JSON.parse(data));
+            // The data needs to be in in Object form for us to parse it before adding it to redis
             const newdata = JSON.parse(data);
+            // We need to stringify data before inserting it into redis since redis SET cant handle objects
             client.set(redisInfo, JSON.stringify(objecthandler(newdata)));
             console.log("Set info for " + redisInfo + " to redis successfully!");
         });
@@ -74,7 +75,7 @@ function HTTPGET2 (URL: String, res: Response, redisInfo: String, objecthandler:
 }
 
 function setJulkaisunTilat(res: Response): void {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res, "getJulkaisunTilat");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res, "getJulkaisunTilat", OH.ObjectHandlerJulkaisuntilat);
 }
 function setKielet(res: Response) {
     HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/kieli/koodi?onlyValidKoodis=false", res, "getKielet", OH.ObjectHandlerKielet);
@@ -83,13 +84,13 @@ function setValtiot(res: Response) {
     HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/maatjavaltiot2/koodi?onlyValidKoodis=false", res, "getValtiot", OH.ObjectHandlerValtiot);
 }
 function setTaideAlanTyyppiKategoria(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res, "getTaideAlanTyyppiKategoria");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taidealantyyppikategoria/koodi?onlyValidKoodis=false", res, "getTaideAlanTyyppiKategoria", OH.ObjectHandlerTaidealantyyppikategoria);
 }
 function setTaiteenalat(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res, "getTaiteenalat");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res, "getTaiteenalat", OH.ObjectHandlerTaiteenalat);
 }
 function setTieteenalat(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat", OH.ObjectHandlerTieteenalat);
 }
 function setTekijanRooli(res: Response) {
     HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli", OH.ObjectHandlerRoolit);
