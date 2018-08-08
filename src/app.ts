@@ -14,6 +14,8 @@ dotenv.config({ path: ".env.example" });
 // Create express server
 const app = express();
 
+const morgan = require("morgan");
+
 // Require bodyparser for every request
 const bodyParser = require("body-parser");
 
@@ -36,7 +38,7 @@ const RedisStore = require("connect-redis")(session);
 
 // CONNECT TO PSQL INSIDE VAGRANT "psql -h 10.10.10.10 -U appaccount -d justus"
 // psql -h 10.10.10.10 -U appaccount -d justus < node_modules/connect-pg-simple/table.sql
-
+app.use(morgan("dev"));
 app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));

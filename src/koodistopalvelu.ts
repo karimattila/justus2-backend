@@ -74,6 +74,7 @@ function HTTPGET2 (URL: String, res: Response, redisInfo: String, objecthandler:
     });
 }
 
+
 function setJulkaisunTilat(res: Response): void {
     HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntila/koodi?onlyValidKoodis=false", res, "getJulkaisunTilat", OH.ObjectHandlerJulkaisuntilat);
 }
@@ -96,7 +97,7 @@ function setTekijanRooli(res: Response) {
     HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli", OH.ObjectHandlerRoolit);
 }
 function setJulkaisunLuokat(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat", OH.ObjectHandlerJulkaisunluokat);
 }
 // NOT SURE IF NEEDED
 // function setAlaYksikot(res: Response) {
@@ -120,4 +121,3 @@ function setJufoTiedot(res: Response) {
 function setJufotISSN(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
 }
-

@@ -3,18 +3,41 @@
     the JSON response its easier to have them in separate functions
 */
 
+import { Request, Response, NextFunction } from "express";
+const https = require("https");
+
+function testfunction (URL: String): object[] {
+    const value: object[] = [
+    ];
+    let data = "";
+    https.get(URL, (resp: Response) => {
+        resp.on("data", (chunk: any) => {
+            data += chunk;
+        });
+        resp.on("end", () => {
+            const newdata = JSON.parse(data);
+            value.push(newdata);
+        });
+    })
+    .on("error", (err: Error) => {
+        console.log("Error: " + err.message);
+    });
+    return value;
+}
+
+
+
 // Objecthandler for Koodistopalvelu kielet
 function ObjectHandlerKielet(obj: any): object[] {
     const kielet: object[] = [
     ];
     obj.forEach((e: any) => {
-        const selite = e.metadata.find( (e: any) => e.kieli === "FI");
+        const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
         const keyvalues = {
             arvo: e.koodiArvo,
-            selite: selite.nimi,
+            selite: metadata.nimi,
         };
         kielet.push(keyvalues);
-        // console.log(keyvalues.arvo + " / HELLO / " +  keyvalues.selite);
     });
         return kielet;
 }
@@ -23,13 +46,12 @@ function ObjectHandlerValtiot(obj: any): object[] {
     const valtiot: object[] = [
     ];
     obj.forEach((e: any) => {
-        const selite = e.metadata.find( (e: any) => e.kieli === "FI");
+        const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
         const keyvalues = {
             arvo: e.koodiArvo,
-            selite: selite.nimi,
+            selite: metadata.nimi,
         };
         valtiot.push(keyvalues);
-        // console.log(keyvalues.arvo + " / HELLO / " +  keyvalues.selite);
     });
         return valtiot;
 }
@@ -38,13 +60,12 @@ function ObjectHandlerRoolit(obj: any): object[] {
     const roolit: object[] = [
     ];
     obj.forEach((e: any) => {
-        const selite = e.metadata.find( (e: any) => e.kieli === "FI");
+        const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
         const keyvalues = {
             arvo: e.koodiArvo,
-            selite: selite.nimi,
+            selite: metadata.nimi,
         };
         roolit.push(keyvalues);
-        // console.log(keyvalues.arvo + " / HELLO / " +  keyvalues.selite);
     });
         return roolit;
 }
@@ -53,13 +74,12 @@ function ObjectHandlerTaiteenalat(obj: any): object[] {
     const taiteenalat: object[] = [
     ];
     obj.forEach((e: any) => {
-        const selite = e.metadata.find( (e: any) => e.kieli === "FI");
+        const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
         const keyvalues = {
             arvo: e.koodiArvo,
-            selite: selite.nimi,
+            selite: metadata.nimi,
         };
         taiteenalat.push(keyvalues);
-        // console.log(keyvalues.arvo + " / HELLO / " +  keyvalues.selite);
     });
         return taiteenalat;
 }
@@ -68,13 +88,12 @@ function ObjectHandlerTieteenalat(obj: any): object[] {
     const tieteenalat: object[] = [
     ];
     obj.forEach((e: any) => {
-        const selite = e.metadata.find( (e: any) => e.kieli === "FI");
+        const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
         const keyvalues = {
             arvo: e.koodiArvo,
-            selite: selite.nimi,
+            selite: metadata.nimi,
         };
         tieteenalat.push(keyvalues);
-        // console.log(keyvalues.arvo + " / HELLO / " +  keyvalues.selite);
     });
         return tieteenalat;
 }
@@ -83,13 +102,12 @@ function ObjectHandlerTaidealantyyppikategoria(obj: any): object[] {
     const taidealantyyppikategoria: object[] = [
     ];
     obj.forEach((e: any) => {
-        const selite = e.metadata.find( (e: any) => e.kieli === "FI");
+        const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
         const keyvalues = {
             arvo: e.koodiArvo,
-            selite: selite.nimi,
+            selite: metadata.nimi,
         };
         taidealantyyppikategoria.push(keyvalues);
-        // console.log(keyvalues.arvo + " / HELLO / " +  keyvalues.selite);
     });
         return taidealantyyppikategoria;
 }
@@ -98,18 +116,50 @@ function ObjectHandlerJulkaisuntilat(obj: any): object[] {
     const julkaisuntilat: object[] = [
     ];
     obj.forEach((e: any) => {
-        if ( (e["koodiArvo"] === "1" || e["koodiArvo"] === "-1" || e["koodiArvo"] === "2" || e["koodiArvo"] === "0")) {
-            const selite = e.metadata.find(( e: any ) => e.kieli === "FI");
+        if ( (e.koodiArvo === "1" || e.koodiArvo === "-1" || e.koodiArvo === "2" || e.koodiArvo === "0")) {
+            const metadata = e.metadata.find(( e: any ) => e.kieli === "FI");
             const keyvalues = {
                 arvo: e.koodiArvo,
-                selite: selite.nimi,
-                kuvaus: selite.kuvaus,
+                selite: metadata.nimi,
+                kuvaus: metadata.kuvaus,
             };
             julkaisuntilat.push(keyvalues);
         }
     });
         return julkaisuntilat;
 }
+// Objecthandler for Koodistopalvelu taidealantyyppikategoriat
+function ObjectHandlerJulkaisunluokat(obj: any): object[] {
+    const julkaisunluokat: object[] = [
+    ];
+    obj.forEach((e: any) => {
+        const spec = e.koodiArvo;
+        const specLC = spec.toLowerCase();
+        const url: string = "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/relaatio/sisaltyy-alakoodit/julkaisunpaaluokka_" + specLC;
+        console.log(url);
+        const alaluokatRAW = testfunction(url);
+        const alaluokat: object[] = [
+        ];
+        alaluokatRAW.forEach((e: any) => {
+            const metadata = e.metadata.find((e: any) => e.kieli === "FI");
+            const al_keyvalues = {
+                arvo: e.koodiArvo,
+                selite: metadata.nimi,
+                kuvaus: metadata.kuvaus,
+            };
+            alaluokat.push(al_keyvalues);
+        });
+        const metadata2 = e.metadata.find( (e: any) => e.kieli === "FI");
+        const keyvalues = {
+            arvo: e.koodiArvo,
+            selite: metadata2.nimi,
+            alatyyppi: alaluokat,
+        };
+        julkaisunluokat.push(keyvalues);
+    });
+        return julkaisunluokat;
+}
+
 
 
 
@@ -122,4 +172,5 @@ module.exports = {
     ObjectHandlerTieteenalat: ObjectHandlerTieteenalat,
     ObjectHandlerTaidealantyyppikategoria: ObjectHandlerTaidealantyyppikategoria,
     ObjectHandlerJulkaisuntilat: ObjectHandlerJulkaisuntilat,
+    ObjectHandlerJulkaisunluokat: ObjectHandlerJulkaisunluokat,
 };
