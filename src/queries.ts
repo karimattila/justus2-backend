@@ -167,7 +167,7 @@ function getTieteenalat(req: Request, res: Response, next: NextFunction) {
 });
 }
 function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
-    getRedis("getJulkaisunLuokat", function success(reply: any) {
+    getRedis("julkaisunluokat", function success(reply: any) {
         res.status(200).json(
            JSON.parse(reply)
         );

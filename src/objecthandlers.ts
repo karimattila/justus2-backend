@@ -5,26 +5,8 @@
 
 import { Request, Response, NextFunction } from "express";
 const https = require("https");
-
-function testfunction (URL: String): object[] {
-    const value: object[] = [
-    ];
-    let data = "";
-    https.get(URL, (resp: Response) => {
-        resp.on("data", (chunk: any) => {
-            data += chunk;
-        });
-        resp.on("end", () => {
-            const newdata = JSON.parse(data);
-            value.push(newdata);
-        });
-    })
-    .on("error", (err: Error) => {
-        console.log("Error: " + err.message);
-    });
-    return value;
-}
-
+const redis = require("redis");
+const client = redis.createClient();
 
 
 // Objecthandler for Koodistopalvelu kielet
@@ -128,27 +110,67 @@ function ObjectHandlerJulkaisuntilat(obj: any): object[] {
     });
         return julkaisuntilat;
 }
+
+function testfunction (URL: String): object[] {
+    const value: object[] = [
+    ];
+    let data = "";
+    https.get(URL, (resp: Response) => {
+        resp.on("data", (chunk: any) => {
+            data += chunk;
+        });
+        resp.on("end", () => {
+            const newdata = JSON.parse(data);
+            value.push(newdata);
+        });
+    })
+    .on("error", (err: Error) => {
+        console.log("Error: " + err.message);
+    });
+    return value;
+}
+
+
+function testfunctiontwo(URL: String, callback: Function) {
+    let data = "";
+    https.get(URL, (resp: Response) => {
+        resp.on("data", (chunk: any) => {
+            data += chunk;
+        });
+        resp.on("end", () => {
+            const newdata = JSON.parse(data);
+            callback(newdata);
+        });
+    })
+    .on("error", (err: Error) => {
+        console.log("Error: " + err.message);
+    });
+}
 // Objecthandler for Koodistopalvelu taidealantyyppikategoriat
-function ObjectHandlerJulkaisunluokat(obj: any): object[] {
+function ObjectHandlerJulkaisunluokat(obj: any) {
     const julkaisunluokat: object[] = [
     ];
+
     obj.forEach((e: any) => {
         const spec = e.koodiArvo;
         const specLC = spec.toLowerCase();
         const url: string = "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/relaatio/sisaltyy-alakoodit/julkaisunpaaluokka_" + specLC;
-        console.log(url);
-        const alaluokatRAW = testfunction(url);
-        const alaluokat: object[] = [
-        ];
-        alaluokatRAW.forEach((e: any) => {
-            const metadata = e.metadata.find((e: any) => e.kieli === "FI");
-            const al_keyvalues = {
-                arvo: e.koodiArvo,
-                selite: metadata.nimi,
-                kuvaus: metadata.kuvaus,
-            };
-            alaluokat.push(al_keyvalues);
-        });
+        testfunctiontwo(url, parse);
+        function parse(alaluokatRAW: object[]) {
+            const alaluokat: object[] = [
+            ];
+            alaluokatRAW.forEach((e: any) => {
+                const metadata = e.metadata.find((e: any) => e.kieli === "FI");
+                const al_keyvalues = {
+                    arvo: e.koodiArvo,
+                    selite: metadata.nimi,
+                    kuvaus: metadata.kuvaus,
+                };
+                alaluokat.push(al_keyvalues);
+            });
+            combine(alaluokat);
+        }
+        function combine(alaluokat: object[]) {
         const metadata2 = e.metadata.find( (e: any) => e.kieli === "FI");
         const keyvalues = {
             arvo: e.koodiArvo,
@@ -156,8 +178,16 @@ function ObjectHandlerJulkaisunluokat(obj: any): object[] {
             alatyyppi: alaluokat,
         };
         julkaisunluokat.push(keyvalues);
-    });
+        settoRedis(julkaisunluokat);
+    }
+});
         return julkaisunluokat;
+
+
+}
+
+function settoRedis(obj: object[]) {
+    client.set("julkaisunluokat", JSON.stringify(obj));
 }
 
 
