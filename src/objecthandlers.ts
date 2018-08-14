@@ -111,27 +111,8 @@ function ObjectHandlerJulkaisuntilat(obj: any): object[] {
         return julkaisuntilat;
 }
 
-function testfunction (URL: String): object[] {
-    const value: object[] = [
-    ];
-    let data = "";
-    https.get(URL, (resp: Response) => {
-        resp.on("data", (chunk: any) => {
-            data += chunk;
-        });
-        resp.on("end", () => {
-            const newdata = JSON.parse(data);
-            value.push(newdata);
-        });
-    })
-    .on("error", (err: Error) => {
-        console.log("Error: " + err.message);
-    });
-    return value;
-}
 
-
-function testfunctiontwo(URL: String, callback: Function) {
+function httpgetCombiner(URL: String, callback: Function) {
     let data = "";
     https.get(URL, (resp: Response) => {
         resp.on("data", (chunk: any) => {
@@ -146,14 +127,14 @@ function testfunctiontwo(URL: String, callback: Function) {
         console.log("Error: " + err.message);
     });
 }
-
+// Objecthandler for Koodistopalvelu tieteenalat
 function ObjectHandlerTieteenalat(obj: any) {
     const tieteenalat: object[] = [
     ];
     obj.forEach((e: any) => {
         const determinator = e.koodiArvo;
         const url: string = "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false";
-        testfunctiontwo(url, parse);
+        httpgetCombiner(url, parse);
         function parse(alatieteenalatRAW: object[]) {
             const alatieteenalat: object[] = [
             ];
@@ -191,7 +172,7 @@ function ObjectHandlerJulkaisunluokat(obj: any) {
         const spec = e.koodiArvo;
         const specLC = spec.toLowerCase();
         const url: string = "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/relaatio/sisaltyy-alakoodit/julkaisunpaaluokka_" + specLC;
-        testfunctiontwo(url, parse);
+        httpgetCombiner(url, parse);
         function parse(alaluokatRAW: object[]) {
             const alaluokat: object[] = [
             ];
