@@ -158,7 +158,7 @@ function getTaiteenalat(req: Request, res: Response, next: NextFunction) {
 });
 }
 function getTieteenalat(req: Request, res: Response, next: NextFunction) {
-    getRedis("getTieteenalat", function success(reply: any) {
+    getRedis("tieteenalat", function success(reply: any) {
         res.status(200).json(
            JSON.parse(reply)
         );

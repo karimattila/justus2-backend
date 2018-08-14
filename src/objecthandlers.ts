@@ -66,19 +66,19 @@ function ObjectHandlerTaiteenalat(obj: any): object[] {
         return taiteenalat;
 }
 // Objecthandler for Koodistopalvelu tieteenalat
-function ObjectHandlerTieteenalat(obj: any): object[] {
-    const tieteenalat: object[] = [
-    ];
-    obj.forEach((e: any) => {
-        const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
-        const keyvalues = {
-            arvo: e.koodiArvo,
-            selite: metadata.nimi,
-        };
-        tieteenalat.push(keyvalues);
-    });
-        return tieteenalat;
-}
+// function ObjectHandlerTieteenalat(obj: any): object[] {
+//     const tieteenalat: object[] = [
+//     ];
+//     obj.forEach((e: any) => {
+//         const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
+//         const keyvalues = {
+//             arvo: e.koodiArvo,
+//             selite: metadata.nimi,
+//         };
+//         tieteenalat.push(keyvalues);
+//     });
+//         return tieteenalat;
+// }
 // Objecthandler for Koodistopalvelu taidealantyyppikategoriat
 function ObjectHandlerTaidealantyyppikategoria(obj: any): object[] {
     const taidealantyyppikategoria: object[] = [
@@ -146,6 +146,42 @@ function testfunctiontwo(URL: String, callback: Function) {
         console.log("Error: " + err.message);
     });
 }
+
+function ObjectHandlerTieteenalat(obj: any) {
+    const tieteenalat: object[] = [
+    ];
+    obj.forEach((e: any) => {
+        const determinator = e.koodiArvo;
+        const url: string = "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false";
+        testfunctiontwo(url, parse);
+        function parse(alatieteenalatRAW: object[]) {
+            const alatieteenalat: object[] = [
+            ];
+            alatieteenalatRAW.forEach((e: any) => {
+                const determinatormatch = e.koodiArvo[0];
+                if ( determinator === determinatormatch ) {
+                const metadata = e.metadata.find((e: any) => e.kieli === "FI");
+                const al_keyvalues = {
+                    arvo: e.koodiArvo,
+                    selite: metadata.nimi,
+                };
+                alatieteenalat.push(al_keyvalues);
+            }});
+            combine(alatieteenalat);
+        }
+        function combine(alatieteenalat: object[]) {
+        const metadata2 = e.metadata.find( (e: any) => e.kieli === "FI");
+        const keyvalues = {
+            arvo: e.koodiArvo,
+            selite: metadata2.nimi,
+            alatyypit: alatieteenalat,
+        };
+        tieteenalat.push(keyvalues);
+        settoRedis("tieteenalat", tieteenalat);
+    }
+});
+        return tieteenalat;
+}
 // Objecthandler for Koodistopalvelu taidealantyyppikategoriat
 function ObjectHandlerJulkaisunluokat(obj: any) {
     const julkaisunluokat: object[] = [
@@ -175,10 +211,10 @@ function ObjectHandlerJulkaisunluokat(obj: any) {
         const keyvalues = {
             arvo: e.koodiArvo,
             selite: metadata2.nimi,
-            alatyyppi: alaluokat,
+            alatyypit: alaluokat,
         };
         julkaisunluokat.push(keyvalues);
-        settoRedis(julkaisunluokat);
+        settoRedis("julkaisunluokat", julkaisunluokat);
     }
 });
         return julkaisunluokat;
@@ -186,8 +222,8 @@ function ObjectHandlerJulkaisunluokat(obj: any) {
 
 }
 
-function settoRedis(obj: object[]) {
-    client.set("julkaisunluokat", JSON.stringify(obj));
+function settoRedis(rediskey: string, obj: object[]) {
+    client.set(rediskey, JSON.stringify(obj));
 }
 
 

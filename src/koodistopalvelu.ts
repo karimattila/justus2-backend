@@ -91,7 +91,7 @@ function setTaiteenalat(res: Response) {
     HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/taiteenala/koodi?onlyValidKoodis=false", res, "getTaiteenalat", OH.ObjectHandlerTaiteenalat);
 }
 function setTieteenalat(res: Response) {
-    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat", OH.ObjectHandlerTieteenalat);
+    HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/paatieteenala/koodi?onlyValidKoodis=false", res, "getTieteenalat", OH.ObjectHandlerTieteenalat);
 }
 function setTekijanRooli(res: Response) {
     HTTPGET2("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisuntekijanrooli/koodi?onlyValidKoodis=false", res, "getTekijanRooli", OH.ObjectHandlerRoolit);
