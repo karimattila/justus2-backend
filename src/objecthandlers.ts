@@ -158,7 +158,7 @@ function ObjectHandlerTieteenalat(obj: any) {
             alatyypit: alatieteenalat,
         };
         tieteenalat.push(keyvalues);
-        settoRedis("tieteenalat", tieteenalat);
+        settoRedis("getTieteenalat", tieteenalat);
     }
 });
         return tieteenalat;
@@ -195,7 +195,7 @@ function ObjectHandlerJulkaisunluokat(obj: any) {
             alatyypit: alaluokat,
         };
         julkaisunluokat.push(keyvalues);
-        settoRedis("julkaisunluokat", julkaisunluokat);
+        settoRedis("getJulkaisunLuokat", julkaisunluokat);
     }
 });
         return julkaisunluokat;
@@ -205,6 +205,7 @@ function ObjectHandlerJulkaisunluokat(obj: any) {
 
 function settoRedis(rediskey: string, obj: object[]) {
     client.set(rediskey, JSON.stringify(obj));
+    console.log("Set info for " + rediskey + " from ObjectHandlers to redis successfully!");
 }
 
 
