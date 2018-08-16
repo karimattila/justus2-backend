@@ -27,8 +27,7 @@ function UpdateKoodistopalveluRedis(res: Response) {
     setTaiteenalat(res),
     setTieteenalat(res),
     setTekijanRooli(res),
-    // Not sure if needed
-    // setAlaYksikot(res),
+    setAlaYksikot(res),
     setValtiot(res),
     setJulkaisunLuokat(res),
     TestFunction());
@@ -38,6 +37,8 @@ function UpdateKoodistopalveluRedis(res: Response) {
 function TestFunction() {
     console.log("Testing scheduler");
 }
+// Used for apis where you need to combine multiple external api calls and set redis later
+// when you have combined the data
 function HTTPGETcombiner (URL: String, res: Response, objecthandler: Function ) {
     https.get(URL, (resp: Response) => {
         let data = "";
@@ -54,7 +55,7 @@ function HTTPGETcombiner (URL: String, res: Response, objecthandler: Function ) 
         console.log("Error: " + err.message);
     });
 }
-// This function will replace old one when all objecthandlers are done
+
 function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: Function ) {
     https.get(URL, (resp: Response) => {
         let data = "";
@@ -98,10 +99,9 @@ function setTekijanRooli(res: Response) {
 function setJulkaisunLuokat(res: Response) {
     HTTPGETcombiner("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, OH.ObjectHandlerJulkaisunluokat);
 }
-// NOT SURE IF NEEDED
-// function setAlaYksikot(res: Response) {
-//     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlaYksikot");
-// }
+function setAlaYksikot(res: Response) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlayksikot", OH.ObjectHandlerAlayksikot);
+}
 // function setAvainSanat(res: Response) {
 //     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
 // }

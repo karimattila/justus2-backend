@@ -65,20 +65,6 @@ function ObjectHandlerTaiteenalat(obj: any): object[] {
     });
         return taiteenalat;
 }
-// Objecthandler for Koodistopalvelu tieteenalat
-// function ObjectHandlerTieteenalat(obj: any): object[] {
-//     const tieteenalat: object[] = [
-//     ];
-//     obj.forEach((e: any) => {
-//         const metadata = e.metadata.find( (e: any) => e.kieli === "FI");
-//         const keyvalues = {
-//             arvo: e.koodiArvo,
-//             selite: metadata.nimi,
-//         };
-//         tieteenalat.push(keyvalues);
-//     });
-//         return tieteenalat;
-// }
 // Objecthandler for Koodistopalvelu taidealantyyppikategoriat
 function ObjectHandlerTaidealantyyppikategoria(obj: any): object[] {
     const taidealantyyppikategoria: object[] = [
@@ -127,6 +113,22 @@ function httpgetCombiner(URL: String, callback: Function) {
         console.log("Error: " + err.message);
     });
 }
+
+// Objecthandler for Koodistopalvelu alayksikot
+function ObjectHandlerAlayksikot(obj: any): object[] {
+    const alayksikot: object[] = [
+    ];
+    obj.forEach((e: any) => {
+            const metadata = e.metadata.find(( e: any ) => e.kieli === "FI");
+            const keyvalues = {
+                arvo: e.koodiArvo,
+                selite: metadata.nimi,
+            };
+            alayksikot.push(keyvalues);
+    });
+        return alayksikot;
+}
+
 // Objecthandler for Koodistopalvelu tieteenalat
 function ObjectHandlerTieteenalat(obj: any) {
     const tieteenalat: object[] = [
@@ -163,15 +165,16 @@ function ObjectHandlerTieteenalat(obj: any) {
 });
         return tieteenalat;
 }
+
+
 // Objecthandler for Koodistopalvelu taidealantyyppikategoriat
 function ObjectHandlerJulkaisunluokat(obj: any) {
     const julkaisunluokat: object[] = [
     ];
 
     obj.forEach((e: any) => {
-        const spec = e.koodiArvo;
-        const specLC = spec.toLowerCase();
-        const url: string = "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/relaatio/sisaltyy-alakoodit/julkaisunpaaluokka_" + specLC;
+        const spec = e.koodiArvo.toLowerCase();
+        const url: string = "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/relaatio/sisaltyy-alakoodit/julkaisunpaaluokka_" + spec;
         httpgetCombiner(url, parse);
         function parse(alaluokatRAW: object[]) {
             const alaluokat: object[] = [
@@ -221,4 +224,5 @@ module.exports = {
     ObjectHandlerTaidealantyyppikategoria: ObjectHandlerTaidealantyyppikategoria,
     ObjectHandlerJulkaisuntilat: ObjectHandlerJulkaisuntilat,
     ObjectHandlerJulkaisunluokat: ObjectHandlerJulkaisunluokat,
+    ObjectHandlerAlayksikot: ObjectHandlerAlayksikot,
 };

@@ -178,18 +178,15 @@ function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
 
 // NOT SURE IF NEEDED
 
-// function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
-//         client.get("getAlaYksikot", function(err: Error, reply: any) {
-//             if (!err) {
-//                 res.status(200).json({
-//                     message: JSON.parse(reply)
-//                 });
-//             }
-//             else {
-//                 res.send("Something went wrong");
-//             }
-//         });
-// }
+function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
+    getRedis("getAlayksikot", function success(reply: any) {
+        res.status(200).json(
+           JSON.parse(reply)
+        );
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
+}
 
 function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
@@ -358,8 +355,7 @@ module.exports = {
     getUser: getUser,
     getAvainSanat: getAvainSanat,
     getJulkaisuSarjat: getJulkaisuSarjat,
-    // Perhaps not neededs
-    // getAlaYksikot: getAlaYksikot,
+    getAlaYksikot: getAlaYksikot,
     getKonferenssinimet: getKonferenssinimet,
     getKustantajat: getKustantajat,
     getJufo: getJufo,
