@@ -149,6 +149,15 @@ function ObjectHandlerTieteenalat(obj: any) {
                     selite: metadata.nimi,
                 };
                 alatieteenalat.push(al_keyvalues);
+                alatieteenalat.sort((a: any, b: any) => {
+                    const numA = a.arvo;
+                    const numB = b.arvo;
+                    if (numA < numB)
+                        return -1;
+                    if (numA > numB)
+                        return 1;
+                    return 0;
+                });
             }});
             combine(alatieteenalat);
         }
@@ -160,6 +169,15 @@ function ObjectHandlerTieteenalat(obj: any) {
             alatyypit: alatieteenalat,
         };
         tieteenalat.push(keyvalues);
+        tieteenalat.sort((a: any, b: any) => {
+            const numA = a.arvo;
+            const numB = b.arvo;
+            if (numA < numB)
+                return -1;
+            if (numA > numB)
+                return 1;
+            return 0;
+        });
         settoRedis("getTieteenalat", tieteenalat);
     }
 });
@@ -187,6 +205,15 @@ function ObjectHandlerJulkaisunluokat(obj: any) {
                     kuvaus: metadata.kuvaus,
                 };
                 alaluokat.push(al_keyvalues);
+                alaluokat.sort((a: any, b: any) => {
+                    const numA = a.arvo[1];
+                    const numB = b.arvo[1];
+                    if (numA < numB)
+                        return -1;
+                    if (numA > numB)
+                        return 1;
+                    return 0;
+                });
             });
             combine(alaluokat);
         }
@@ -198,6 +225,15 @@ function ObjectHandlerJulkaisunluokat(obj: any) {
             alatyypit: alaluokat,
         };
         julkaisunluokat.push(keyvalues);
+        julkaisunluokat.sort((a: any, b: any) => {
+            const nameA = a.arvo;
+            const nameB = b.arvo;
+            if (nameA < nameB)
+                return -1;
+            if (nameA > nameB)
+                return 1;
+            return 0;
+        });
         settoRedis("getJulkaisunLuokat", julkaisunluokat);
     }
 });
