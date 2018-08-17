@@ -121,7 +121,7 @@ function ObjectHandlerAlayksikot(obj: any): object[] {
     obj.forEach((e: any) => {
             const metadata = e.metadata.find(( e: any ) => e.kieli === "FI");
             const keyvalues = {
-                arvo: e.koodiArvo,
+                arvo: e.koodiArvo.split("-").pop(),
                 selite: metadata.nimi,
             };
             alayksikot.push(keyvalues);
