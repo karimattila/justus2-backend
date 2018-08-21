@@ -247,17 +247,38 @@ function settoRedis(rediskey: string, obj: object[]) {
     console.log("Set info for " + rediskey + " from ObjectHandlers to redis successfully!");
 }
 
-
+// Objecthandler for Avainsanat from FINTO
 function ObjectHandlerAvainsanat(obj: any): object[] {
-        return obj["results"].map((x: any) => {
+        return obj["results"].map((e: any) => {
             return {
-                localname: x.localname,
-                prefLabel: x.prefLabel,
-                altLabel: x.altLabel,
+                localname: e.localname,
+                prefLabel: e.prefLabel,
+                altLabel: e.altLabel,
                 };
              });
 }
 
+// Objecthandler for Julkaisusarjat from FINTO
+function ObjectHandlerJulkaisusarjat(obj: any): object[] {
+    const julkaisusarjat: object [] = [
+    ];
+    if (obj instanceof Array) {
+    obj.forEach((e: any)  => {
+        const values = {
+            Jufo_ID: e.Jufo_ID,
+            Name: e.Name,
+            Type: e.Type,
+
+        };
+        julkaisusarjat.push(values);
+
+    });
+    return julkaisusarjat;
+    }
+    else {
+        return obj;
+    }
+}
 
 
 
@@ -272,4 +293,5 @@ module.exports = {
     ObjectHandlerJulkaisunluokat: ObjectHandlerJulkaisunluokat,
     ObjectHandlerAlayksikot: ObjectHandlerAlayksikot,
     ObjectHandlerAvainsanat: ObjectHandlerAvainsanat,
+    ObjectHandlerJulkaisusarjat: ObjectHandlerJulkaisusarjat,
 };
