@@ -11,7 +11,8 @@ const options = {
 };
 
 const BASEURLFINTO = "https://api.finto.fi/rest/v1/yso/search?type=skos%3AConcept&unique=true&lang=FI&query=";
-const BASEURLJUFO =   "https://jufo-rest.csc.fi/v1.0/etsi.php?tyyppi=1&nimi=";
+const BASEURLJUFO =   "https://jufo-rest.csc.fi/v1.0/etsi.php?tyyppi=";
+
 // Initializing postgres connection by using pg-promise
 const pgp = require("pg-promise")(options);
 // Connection string for the database, move this to a ENV.variable later
@@ -204,7 +205,7 @@ function getAvainSanat(req: Request, res: Response, next: NextFunction) {
         kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerAvainsanat);
 }
 function getJulkaisuSarjat(req: Request, res: Response, next: NextFunction) {
-        const apiurl: string = BASEURLJUFO + req.query.q;
+        const apiurl: string = BASEURLJUFO + "1&nimi=" + req.query.q;
         console.log("This is the apiurl: " + apiurl);
 
         // The jufo rest api is kinda weird, if the query word is <5 or over 50
@@ -218,13 +219,46 @@ function getJulkaisuSarjat(req: Request, res: Response, next: NextFunction) {
         }
 }
 function getKonferenssinimet(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+        const apiurl: string = BASEURLJUFO + "3&nimi=" + req.query.q;
+        console.log("This is the apiurl: " + apiurl);
+
+        // The jufo rest api is kinda weird, if the query word is <5 or over 50
+        // it returns nothing, which breaks the code, hence the odd looking error handling
+
+        if ((req.query.q).length >= 5 && (req.query.q).length <= 50) {
+        kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerKonferenssinnimet);
+        }
+        else {
+            res.send("");
+        }
 }
 function getKustantajat(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+        const apiurl: string = BASEURLJUFO + "2&nimi=" + req.query.q;
+        console.log("This is the apiurl: " + apiurl);
+
+        // The jufo rest api is kinda weird, if the query word is <5 or over 50
+        // it returns nothing, which breaks the code, hence the odd looking error handling
+
+        if ((req.query.q).length >= 5 && (req.query.q).length <= 50) {
+        kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerKustantajat);
+        }
+        else {
+            res.send("");
+        }
 }
 function getJufo(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+        const apiurl: string = "https://jufo-rest.csc.fi/v1.0/kanava/" + req.params.id;
+        console.log("This is the apiurl: " + apiurl);
+
+        // The jufo rest api is kinda weird, if the query word is <5 or over 50
+        // it returns nothing, which breaks the code, hence the odd looking error handling
+
+        if ((req.params.id).length > 0 && (req.params.id).length <= 9) {
+        kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerJufoID);
+        }
+        else {
+            res.send("");
+        }
 }
 function getJufotISSN(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE

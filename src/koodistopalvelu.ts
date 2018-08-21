@@ -64,7 +64,6 @@ function HTTPGETshow (URL: String, res: Response, objecthandler: Function) {
         });
         resp.on("end", () => {
             const newdata = JSON.parse(data);
-            // res.send(newdata);
             res.send(objecthandler(newdata));
         });
     })

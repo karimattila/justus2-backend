@@ -268,12 +268,110 @@ function ObjectHandlerJulkaisusarjat(obj: any): object[] {
             Jufo_ID: e.Jufo_ID,
             Name: e.Name,
             Type: e.Type,
-
         };
         julkaisusarjat.push(values);
-
     });
     return julkaisusarjat;
+    }
+    else {
+        return obj;
+    }
+}
+
+// Objecthandler for Konferenssinnimet from FINTO
+function ObjectHandlerKustantajat(obj: any): object[] {
+    const Konferenssinnimet: object [] = [
+    ];
+    if (obj instanceof Array) {
+    obj.forEach((e: any)  => {
+        const values = {
+            Jufo_ID: e.Jufo_ID,
+            Name: e.Name,
+            Type: e.Type,
+        };
+        Konferenssinnimet.push(values);
+    });
+    return Konferenssinnimet;
+    }
+    else {
+        return obj;
+    }
+}
+
+// Objecthandler for Konferenssinnimet from FINTO
+function ObjectHandlerKonferenssinnimet(obj: any): object[] {
+    const Konferenssinnimet: object [] = [
+    ];
+    if (obj instanceof Array) {
+    obj.forEach((e: any)  => {
+        const values = {
+            Jufo_ID: e.Jufo_ID,
+            Name: e.Name,
+            Type: e.Type,
+        };
+        Konferenssinnimet.push(values);
+    });
+    return Konferenssinnimet;
+    }
+    else {
+        return obj;
+    }
+}
+
+// Objecthandler for Konferenssinnimet from FINTO
+function ObjectHandlerJufoID(obj: any): object[] {
+    const jufotiedot: object [] = [
+    ];
+    if (obj instanceof Array) {
+    obj.forEach((e: any)  => {
+        const values = {
+            Jufo_2015: e.Jufo_2015,
+            Abbreviation: e.Abbreviation,
+            SJR_SJR: e.SJR_SJR,
+            Other_Title: e.Other_Title,
+            ModifiedAt: e.ModifiedAt,
+            Continues: e.Continues,
+            ISBN: e.ISBN,
+            Professional: e.Professional,
+            Denmark_Level: e.Denmark_Level,
+            Active_Binary: e.Active_Binary,
+            Field: e.Field,
+            SNIP: e.SNIP,
+            Name: e.Name,
+            Website: e.Website,
+            ISSN1: e.ISSN1,
+            ISSNL: e.ISSNL,
+            Grounds_Removal: e.Grounds_Removal,
+            Jufo_ID: e.Jufo_ID,
+            Year_End: e.Year_End,
+            Publisher: e.Publisher,
+            Scientific: e.Scientific,
+            Language: e.Language,
+            Jufo_2012: e.Jufo_2012,
+            Continued_by: e.Continued_by,
+            Jufo_2014: e.Jufo_2014,
+            Type: e.Type,
+            Title_Details: e.Title_Details,
+            Norway_Level: e.Norway_Level,
+            Sherpa_Romeo_Code: e.Sherpa_Romeo_Code,
+            Substitutive_Channel: e.Substitutive_Channel,
+            Year_Start: e.Year_Start,
+            DOAJ_Index: e.DOAJ_Index,
+            Fields: e.Fields,
+            Country: e.Country,
+            Jufo_history: e.Jufo_history,
+            CreatedAt: e.CreatedAt,
+            Active: e.Active,
+            IPP: e.IPP,
+            Level: e.Level,
+            Subfield: e.Subfield,
+            ISSN2: e.ISSN2,
+            Jufo_2013: e.Jufo_2013,
+
+        };
+        jufotiedot.push(values);
+    });
+    return jufotiedot;
     }
     else {
         return obj;
@@ -294,4 +392,7 @@ module.exports = {
     ObjectHandlerAlayksikot: ObjectHandlerAlayksikot,
     ObjectHandlerAvainsanat: ObjectHandlerAvainsanat,
     ObjectHandlerJulkaisusarjat: ObjectHandlerJulkaisusarjat,
+    ObjectHandlerKonferenssinnimet: ObjectHandlerKonferenssinnimet,
+    ObjectHandlerKustantajat: ObjectHandlerKustantajat,
+    ObjectHandlerJufoID: ObjectHandlerJufoID,
 };
