@@ -4,10 +4,13 @@ const schedule = require("node-schedule");
 const https = require("https");
 const promise = require("bluebird");
 const kp = require("./koodistopalvelu");
+const oh = require("./objecthandlers");
 // Options used for our pgp const
 const options = {
     promiseLib: promise
 };
+
+const BASEURLFINTO = "https://api.finto.fi/rest/v1/yso/search?type=skos%3AConcept&unique=true&lang=FI&query=";
 
 // Initializing postgres connection by using pg-promise
 const pgp = require("pg-promise")(options);
@@ -52,6 +55,7 @@ function getJulkaisut(req: Request, res: Response, next: NextFunction) {
 
 // Get a specific julkaisu by "id"
 function getAjulkaisu(req: Request, res: Response, next: NextFunction) {
+    kp.HTTPGETshow();
     db.any("select * from julkaisu where id = ${id}", {
         id: req.params.id
     })
@@ -195,7 +199,9 @@ function getUser(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
 function getAvainSanat(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+        const apiurl: string = BASEURLFINTO + req.query.q + "*";
+        console.log("This is the apiurl: " + apiurl);
+        kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerAvainsanat);
 }
 function getJulkaisuSarjat(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE

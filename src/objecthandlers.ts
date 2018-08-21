@@ -248,6 +248,16 @@ function settoRedis(rediskey: string, obj: object[]) {
 }
 
 
+function ObjectHandlerAvainsanat(obj: any): object[] {
+        return obj["results"].map((x: any) => {
+            return {
+                localname: x.localname,
+                prefLabel: x.prefLabel,
+                altLabel: x.altLabel,
+                };
+             });
+}
+
 
 
 
@@ -261,4 +271,5 @@ module.exports = {
     ObjectHandlerJulkaisuntilat: ObjectHandlerJulkaisuntilat,
     ObjectHandlerJulkaisunluokat: ObjectHandlerJulkaisunluokat,
     ObjectHandlerAlayksikot: ObjectHandlerAlayksikot,
+    ObjectHandlerAvainsanat: ObjectHandlerAvainsanat,
 };

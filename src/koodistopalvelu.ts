@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, json } from "express";
 const schedule = require("node-schedule");
 const https = require("https");
 
@@ -49,6 +49,23 @@ function HTTPGETcombiner (URL: String, res: Response, objecthandler: Function ) 
             const newdata = JSON.parse(data);
             objecthandler(newdata);
             console.log("Set info for " + objecthandler.name + " to redis successfully!");
+        });
+    })
+    .on("error", (err: Error) => {
+        console.log("Error: " + err.message);
+    });
+}
+
+function HTTPGETshow (URL: String, res: Response, objecthandler: Function) {
+    https.get(URL, (resp: Response) => {
+        let data = "";
+        resp.on("data", (chunk: any) => {
+            data += chunk;
+        });
+        resp.on("end", () => {
+            const newdata = JSON.parse(data);
+            // res.send(newdata);
+            res.send(objecthandler(newdata));
         });
     })
     .on("error", (err: Error) => {
@@ -120,3 +137,8 @@ function setAlaYksikot(res: Response) {
 // function setJufotISSN(res: Response) {
 //     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
 // }
+
+
+module.exports = {
+HTTPGETshow: HTTPGETshow
+};
