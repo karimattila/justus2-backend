@@ -377,6 +377,25 @@ function ObjectHandlerJufoID(obj: any): object[] {
         return obj;
     }
 }
+// Objecthandler for Jufo ISSN
+function ObjectHandlerJufoISSN(obj: any): object[] {
+    const tiedotbyissn: object [] = [
+    ];
+    if (obj instanceof Array) {
+    obj.forEach((e: any)  => {
+        const values = {
+            Jufo_ID: e.Jufo_ID,
+            Name: e.Name,
+            Type: e.Type,
+        };
+        tiedotbyissn.push(values);
+    });
+    return tiedotbyissn;
+    }
+    else {
+        return obj;
+    }
+}
 
 
 
@@ -395,4 +414,5 @@ module.exports = {
     ObjectHandlerKonferenssinnimet: ObjectHandlerKonferenssinnimet,
     ObjectHandlerKustantajat: ObjectHandlerKustantajat,
     ObjectHandlerJufoID: ObjectHandlerJufoID,
+    ObjectHandlerJufoISSN: ObjectHandlerJufoISSN,
 };
