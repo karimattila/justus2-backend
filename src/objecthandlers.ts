@@ -397,34 +397,17 @@ function ObjectHandlerJufoISSN(obj: any): object[] {
     }
 }
 
-
+// Nullchecker for julkaisutvirtaCR
+function nullchecker(tocheck: any) {
+    if (tocheck == undefined) {
+        return "";
+    }
+    else {
+        return tocheck.map((s: any) => s.given + " " + s.family);
+    }
+}
 // Objecthandler for JulkaisutVIRTACR
 function ObjectHandlerJulkaisutVIRTACR(obj: any): object[] {
-    // const JulkaisutVIRTACR: object [] = [
-    // ];
-    // const items = obj.message.items.map((e: any ) => e);
-    //     const values = {
-    //         lahde: items.source,
-    //         id: items.Name,
-    //     };
-    //     const src = {
-    //         src: values,
-    //         title: items.title,
-    //         authors: items.author,
-    //         ISSN: items.ISSN,
-    //         // date: items.indexed["date-parts"].map((e: any) => e),
-    //     };
-    //     JulkaisutVIRTACR.push(src);
-    // return JulkaisutVIRTACR;
-
-    function nullchecker(tocheck: any) {
-        if (tocheck == undefined) {
-            return "";
-        }
-        else {
-            return tocheck.map((s: any) => s.given + " " + s.family);
-        }
-    }
     return obj.message.items.map((e: any) => {
         const authorsstuff = e.author;
         return {
@@ -440,6 +423,10 @@ function ObjectHandlerJulkaisutVIRTACR(obj: any): object[] {
         });
     }
 
+// WAIT FOR FURTHER INSTRUCTIONS, UNCLEAR RIGHT NOW
+// function ObjectHandlerJulkaisutVIRTAPART(obj: any) {
+
+// }
 
 module.exports = {
     ObjectHandlerKielet: ObjectHandlerKielet,
