@@ -398,6 +398,48 @@ function ObjectHandlerJufoISSN(obj: any): object[] {
 }
 
 
+// Objecthandler for JulkaisutVIRTACR
+function ObjectHandlerJulkaisutVIRTACR(obj: any): object[] {
+    // const JulkaisutVIRTACR: object [] = [
+    // ];
+    // const items = obj.message.items.map((e: any ) => e);
+    //     const values = {
+    //         lahde: items.source,
+    //         id: items.Name,
+    //     };
+    //     const src = {
+    //         src: values,
+    //         title: items.title,
+    //         authors: items.author,
+    //         ISSN: items.ISSN,
+    //         // date: items.indexed["date-parts"].map((e: any) => e),
+    //     };
+    //     JulkaisutVIRTACR.push(src);
+    // return JulkaisutVIRTACR;
+
+    function nullchecker(tocheck: any) {
+        if (tocheck == undefined) {
+            return "";
+        }
+        else {
+            return tocheck.map((s: any) => s.given + " " + s.family);
+        }
+    }
+    return obj.message.items.map((e: any) => {
+        const authorsstuff = e.author;
+        return {
+            src: {
+                lahde: e.source,
+                id: e.DOI,
+            },
+            title: e.title[0],
+            authors: nullchecker(authorsstuff),
+            ISBN: e.ISBN,
+            ISSN: e.ISSN,
+            };
+        });
+    }
+
 
 module.exports = {
     ObjectHandlerKielet: ObjectHandlerKielet,
@@ -415,4 +457,5 @@ module.exports = {
     ObjectHandlerKustantajat: ObjectHandlerKustantajat,
     ObjectHandlerJufoID: ObjectHandlerJufoID,
     ObjectHandlerJufoISSN: ObjectHandlerJufoISSN,
+    ObjectHandlerJulkaisutVIRTACR: ObjectHandlerJulkaisutVIRTACR,
 };

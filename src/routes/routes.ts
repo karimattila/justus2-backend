@@ -25,7 +25,7 @@ router.get("/haku/konferenssinnimet/", db.getKonferenssinimet);
 router.get("/haku/kustantajat/", db.getKustantajat);
 router.get("/haku/jufo/:id", db.getJufo);
 router.get("/haku/jufot/", db.getJufotISSN);
-router.get("/haku/julkaisut/", db.getJulkaisutVIRTACF);
+router.get("/haku/julkaisut/", db.getJulkaisutVIRTACR);
 router.get("/haku/julkaisu/?lahde=virta&id=abc", db.getJulkaisuVirta);
 router.get("/haku/julkaisu/?lahde=crossref&id=def", db.getJulkaisuCrossref);
 router.get("/user", db.getUser);

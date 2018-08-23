@@ -274,19 +274,13 @@ function getJufotISSN(req: Request, res: Response, next: NextFunction) {
             res.send("");
         }
 }
-function getJulkaisutVIRTACF(req: Request, res: Response, next: NextFunction) {
-    const apiurl: string = "https://jufo-rest.csc.fi/v1.0/etsi.php?issn=" + req.query.q;
+function getJulkaisutVIRTACR(req: Request, res: Response, next: NextFunction) {
+    const apiurl: string = "https://api.crossref.org/works?sort=published&order=desc&rows=50&query.title=" + req.query.q;
     console.log("This is the apiurl: " + apiurl);
 
     // The jufo rest api is kinda weird, if the query word is <5 or over 50
     // it returns nothing, which breaks the code, hence the odd looking error handling
-
-    if ((req.query.q).length >= 5 && (req.query.q).length <= 10) {
-    kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerJufoISSN);
-    }
-    else {
-        res.send("");
-    }
+    kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerJulkaisutVIRTACR);
 }
 function getJulkaisuVirta(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
@@ -433,7 +427,7 @@ module.exports = {
     getKustantajat: getKustantajat,
     getJufo: getJufo,
     getJufotISSN: getJufotISSN,
-    getJulkaisutVIRTACF: getJulkaisutVIRTACF,
+    getJulkaisutVIRTACR: getJulkaisutVIRTACR,
     getJulkaisuVirta: getJulkaisuVirta,
     getJulkaisuCrossref: getJulkaisuCrossref,
     // POST requests
