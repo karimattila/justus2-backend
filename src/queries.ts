@@ -193,9 +193,6 @@ function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
 });
 }
 
-function getJulkaisuCrossref(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
-}
 function getUser(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
@@ -282,8 +279,21 @@ function getJulkaisutVIRTACR(req: Request, res: Response, next: NextFunction) {
     // it returns nothing, which breaks the code, hence the odd looking error handling
     kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerJulkaisutVIRTACR);
 }
-function getJulkaisuVirta(req: Request, res: Response, next: NextFunction) {
-    // TODO ADD CODE HERE
+
+// Esitäyttö, figure out how the res object should look.
+function getJulkaisuVirtaCrossrefEsitäyttö(req: Request, res: Response, next: NextFunction) {
+    const apiurlCR = "https://api.crossref.org/works/" + req.query.id;
+    const apiurlVirta = "https://virta-jtp.csc.fi/api/julkaisut/" + req.query.id;
+    console.log("This is the req query lahde: " + req.query.lahde + " And this is the req query id: " + req.query.id);
+    if (req.query.lahde === "virta") {
+        kp.HTTPGETshow(apiurlVirta, res , oh.ObjectHandlerVirtaEsitäyttö);
+    }
+    else if (req.query.lahde === "crossref") {
+        kp.HTTPGETshow(apiurlCR, res, oh.ObjectHandlerCrossrefEsitäyttö);
+    }
+    else {
+        res.send("Wrong lahde parameter, try again");
+    }
 }
 
 
@@ -293,8 +303,6 @@ function getJulkaisuVirta(req: Request, res: Response, next: NextFunction) {
 function postJulkaisu(req: Request, res: Response, next: NextFunction) {
     const organisaatiotekija = req.body.organisaatiotekija.map((e: any) => {
         return {
-        // ei ole tietoa käytetäänkö tätä ID:tä POST: reqissä
-        // id: e.id,
         etunimet: e.etunimet,
         sukunimi: e.sukunimi,
         orcid: e.orcid,
@@ -428,8 +436,7 @@ module.exports = {
     getJufo: getJufo,
     getJufotISSN: getJufotISSN,
     getJulkaisutVIRTACR: getJulkaisutVIRTACR,
-    getJulkaisuVirta: getJulkaisuVirta,
-    getJulkaisuCrossref: getJulkaisuCrossref,
+    getJulkaisuVirtaCrossrefEsitäyttö: getJulkaisuVirtaCrossrefEsitäyttö,
     // POST requests
     postJulkaisu: postJulkaisu,
     postOrg: postOrg,

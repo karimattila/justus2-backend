@@ -397,13 +397,13 @@ function ObjectHandlerJufoISSN(obj: any): object[] {
     }
 }
 
-// Nullchecker for julkaisutvirtaCR
-function nullchecker(tocheck: any) {
-    if (tocheck == undefined) {
+// Nullchecker for julkaisutvirtaCR, used to check if authors exists
+function nullchecker(doesauthorexist: any) {
+    if (doesauthorexist == undefined) {
         return "";
     }
     else {
-        return tocheck.map((s: any) => s.given + " " + s.family);
+        return doesauthorexist.map((s: any) => s.given + " " + s.family);
     }
 }
 // Objecthandler for JulkaisutVIRTACR
@@ -427,7 +427,12 @@ function ObjectHandlerJulkaisutVIRTACR(obj: any): object[] {
 // function ObjectHandlerJulkaisutVIRTAPART(obj: any) {
 
 // }
-
+function ObjectHandlerVirtaEsitäyttö(obj: any): object[] {
+    return obj;
+}
+function ObjectHandlerCrossrefEsitäyttö(obj: any): object[] {
+    return obj;
+}
 module.exports = {
     ObjectHandlerKielet: ObjectHandlerKielet,
     ObjectHandlerValtiot: ObjectHandlerValtiot,
@@ -445,4 +450,6 @@ module.exports = {
     ObjectHandlerJufoID: ObjectHandlerJufoID,
     ObjectHandlerJufoISSN: ObjectHandlerJufoISSN,
     ObjectHandlerJulkaisutVIRTACR: ObjectHandlerJulkaisutVIRTACR,
+    ObjectHandlerVirtaEsitäyttö: ObjectHandlerVirtaEsitäyttö,
+    ObjectHandlerCrossrefEsitäyttö: ObjectHandlerCrossrefEsitäyttö,
 };
