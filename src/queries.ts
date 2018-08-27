@@ -42,11 +42,11 @@ const getRedis = (rediskey: string, success: any, error: any) => {
 // All GET requests first
 // Get all julkaisut
 function getJulkaisut(req: Request, res: Response, next: NextFunction) {
-    db.any("select * from julkaisu")
+    db.any("select julkaisu.*, organisaatiotekija.etunimet, organisaatiotekija.sukunimi, organisaatiotekija.orcid, organisaatiotekija.rooli, tieteenala.tieteenalakoodi, tieteenala.jnro, taiteenala.taiteenalakoodi, taiteenala.jnro, avainsana.avainsana AS avainsanat, taidealantyyppikategoria.tyyppikategoria AS taidealantyyppikategoria, lisatieto.lisatietotyyppi, lisatieto.lisatietoteksti from julkaisu, organisaatiotekija, tieteenala, taiteenala, avainsana, taidealantyyppikategoria, lisatieto where julkaisu.id = organisaatiotekija.julkaisuid AND julkaisu.id = tieteenala.julkaisuid AND julkaisu.id= taiteenala.julkaisuid AND julkaisu.id = avainsana.julkaisuid AND julkaisu.id = taidealantyyppikategoria.julkaisuid AND julkaisu.id = lisatieto.julkaisuid")
         .then((data: any) => {
             res.status(200)
                 .json({
-                    data: data
+                    julkaisu: data
     });
 })
         .catch((err: any) => {
@@ -301,77 +301,78 @@ function getJulkaisuVirtaCrossrefEsitäyttö(req: Request, res: Response, next: 
 // Post a julkaisu to the database
 // Catch the JSON body and parse it so that we can insert the values into postgres
 function postJulkaisu(req: Request, res: Response, next: NextFunction) {
-    const organisaatiotekija = req.body.organisaatiotekija.map((e: any) => {
-        return {
-        etunimet: e.etunimet,
-        sukunimi: e.sukunimi,
-        orcid: e.orcid,
-        rooli: e.rooli,
-        alayksikko: e.alayksikko
-        };
-    });
-    const taidealantyyppikategoria = req.body.taidealantyyppikategoria.map((e: any) =>  e);
-    const avainsanat = req.body.avainsanat.map((e: any) =>  e);
-    const taiteenala = req.body.taiteenala.map((e: any) =>  e);
-    const tieteenala = req.body.tieteenala.map((e: any) => {
-        return {
-        tieteenalakoodi: e.tieteenalakoodi,
-        jnro: e.jnro,
-        };
-    });
-    const lisatieto = {
-        julkaisuvuodenlisatieto: req.body.lisatieto.julkaisuvuodenlisatieto,
-        tapahtuma: req.body.lisatieto.tapahtuma,
-        julkistamispaikkakunta: req.body.lisatieto.julkistamispaikkakunta,
-        muutunniste: req.body.lisatieto.muutunniste,
-    };
-    const Julkaisu = {
-        organisaatiotunnus: req.body.julkaisu.organisaatiotunnus,
-        julkaisutyyppi: req.body.julkaisu.julkaisutyyppi,
-        julkaisuvuosi: req.body.julkaisu.julkaisuvuosi,
-        julkaisunnimi: req.body.julkaisu.julkaisunnimi,
-        tekijat: req.body.julkaisu.tekijat,
-        julkaisuntekijoidenlukumaara: req.body.julkaisu.julkaisuntekijoidenlukumaara,
-        konferenssinvakiintunutnimi: req.body.julkaisu.konferenssinvakiintunutnimi,
-        emojulkaisunnimi: req.body.julkaisu.emojulkaisunnimi,
-        isbn: req.body.julkaisu.isbn,
-        emojulkaisuntoimittajat: req.body.julkaisu.emojulkaisuntoimittajat,
-        lehdenjulkaisusarjannimi: req.body.julkaisu.lehdenjulkaisusarjannimi,
-        issn: req.body.julkaisu.issn,
-        volyymi: req.body.julkaisu.volyymi,
-        numero: req.body.julkaisu.numero,
-        sivut: req.body.julkaisu.sivut,
-        artikkelinumero: req.body.julkaisu.artikkelinumero,
-        kustantaja: req.body.julkaisu.kustantaja,
-        julkaisunkustannuspaikka: req.body.julkaisu.julkaisunkustannuspaikka,
-        julkaisunkieli: req.body.julkaisu.julkaisunkieli,
-        julkaisunkansainvalisyys: req.body.julkaisu.julkaisunkansainvalisyys,
-        julkaisumaa: req.body.julkaisu.julkaisumaa,
-        kansainvalinenyhteisjulkaisu: req.body.julkaisu.kansainvalinenyhteisjulkaisu,
-        yhteisjulkaisuyrityksenkanssa: req.body.julkaisu.yhteisjulkaisuyrityksenkanssa,
-        doitunniste: req.body.julkaisu.doitunniste,
-        pysyvaverkkoosoite: req.body.julkaisu.pysyvaverkkoosoite,
-        julkaisurinnakkaistallennettu: req.body.julkaisu.avoinsaatavuus,
-        avoinsaatavuus: req.body.julkaisu.julkaisurinnakkaistallennettu,
-        rinnakkaistallennetunversionverkkoosoite: req.body.julkaisu.rinnakkaistallennetunversionverkkoosoite,
-        lisatieto: req.body.julkaisu.lisatieto,
-        jufotunnus: req.body.julkaisu.jufotunnus,
-        jufoluokitus: req.body.julkaisu.jufoluokitus,
-        julkaisuntila: req.body.julkaisu.julkaisuntila,
-        username: req.body.julkaisu.username,
-        modified: req.body.julkaisu.modified,
-    };
-    db.none("INSERT INTO julkaisu DEFAULT VALUES")
+    // const organisaatiotekija = req.body.organisaatiotekija.map((e: any) => {
+    //     return {
+    //     etunimet: e.etunimet,
+    //     sukunimi: e.sukunimi,
+    //     orcid: e.orcid,
+    //     rooli: e.rooli,
+    //     alayksikko: e.alayksikko
+    //     };
+    // });
+    // const taidealantyyppikategoria = req.body.taidealantyyppikategoria.map((e: any) =>  e);
+    // const avainsanat = req.body.avainsanat.map((e: any) =>  e);
+    // const taiteenala = req.body.taiteenala.map((e: any) =>  e);
+    // const tieteenala = req.body.tieteenala.map((e: any) => {
+    //     return {
+    //     tieteenalakoodi: e.tieteenalakoodi,
+    //     jnro: e.jnro,
+    //     };
+    // });
+    // const lisatieto = {
+    //     julkaisuvuodenlisatieto: req.body.lisatieto.julkaisuvuodenlisatieto,
+    //     tapahtuma: req.body.lisatieto.tapahtuma,
+    //     julkistamispaikkakunta: req.body.lisatieto.julkistamispaikkakunta,
+    //     muutunniste: req.body.lisatieto.muutunniste,
+    // };
+    // const Julkaisu = {
+    //     organisaatiotunnus: req.body.julkaisu.organisaatiotunnus,
+    //     julkaisutyyppi: req.body.julkaisu.julkaisutyyppi,
+    //     julkaisuvuosi: req.body.julkaisu.julkaisuvuosi,
+    //     julkaisunnimi: req.body.julkaisu.julkaisunnimi,
+    //     tekijat: req.body.julkaisu.tekijat,
+    //     julkaisuntekijoidenlukumaara: req.body.julkaisu.julkaisuntekijoidenlukumaara,
+    //     konferenssinvakiintunutnimi: req.body.julkaisu.konferenssinvakiintunutnimi,
+    //     emojulkaisunnimi: req.body.julkaisu.emojulkaisunnimi,
+    //     isbn: req.body.julkaisu.isbn,
+    //     emojulkaisuntoimittajat: req.body.julkaisu.emojulkaisuntoimittajat,
+    //     lehdenjulkaisusarjannimi: req.body.julkaisu.lehdenjulkaisusarjannimi,
+    //     issn: req.body.julkaisu.issn,
+    //     volyymi: req.body.julkaisu.volyymi,
+    //     numero: req.body.julkaisu.numero,
+    //     sivut: req.body.julkaisu.sivut,
+    //     artikkelinumero: req.body.julkaisu.artikkelinumero,
+    //     kustantaja: req.body.julkaisu.kustantaja,
+    //     julkaisunkustannuspaikka: req.body.julkaisu.julkaisunkustannuspaikka,
+    //     julkaisunkieli: req.body.julkaisu.julkaisunkieli,
+    //     julkaisunkansainvalisyys: req.body.julkaisu.julkaisunkansainvalisyys,
+    //     julkaisumaa: req.body.julkaisu.julkaisumaa,
+    //     kansainvalinenyhteisjulkaisu: req.body.julkaisu.kansainvalinenyhteisjulkaisu,
+    //     yhteisjulkaisuyrityksenkanssa: req.body.julkaisu.yhteisjulkaisuyrityksenkanssa,
+    //     doitunniste: req.body.julkaisu.doitunniste,
+    //     pysyvaverkkoosoite: req.body.julkaisu.pysyvaverkkoosoite,
+    //     julkaisurinnakkaistallennettu: req.body.julkaisu.avoinsaatavuus,
+    //     avoinsaatavuus: req.body.julkaisu.julkaisurinnakkaistallennettu,
+    //     rinnakkaistallennetunversionverkkoosoite: req.body.julkaisu.rinnakkaistallennetunversionverkkoosoite,
+    //     lisatieto: req.body.julkaisu.lisatieto,
+    //     jufotunnus: req.body.julkaisu.jufotunnus,
+    //     jufoluokitus: req.body.julkaisu.jufoluokitus,
+    //     julkaisuntila: req.body.julkaisu.julkaisuntila,
+    //     username: req.body.julkaisu.username,
+    //     modified: req.body.julkaisu.modified,
+    // };
+    db.one("INSERT INTO julkaisu (organisaatiotunnus, julkaisutyyppi, julkaisuvuosi, julkaisunnimi, tekijat, julkaisuntekijoidenlukumaara, konferenssinvakiintunutnimi, emojulkaisunnimi, isbn, emojulkaisuntoimittajat, lehdenjulkaisusarjannimi, issn, volyymi, numero, sivut, artikkelinumero, kustantaja, julkaisunkustannuspaikka, julkaisunkieli, julkaisunkansainvalisyys, julkaisumaa, kansainvalinenyhteisjulkaisu, yhteisjulkaisuyrityksenkanssa, doitunniste, pysyvaverkkoosoite, julkaisurinnakkaistallennettu, avoinsaatavuus, rinnakkaistallennetunversionverkkoosoite, lisatieto, jufotunnus, jufoluokitus, julkaisuntila, username, modified)" + "values (${julkaisu.organisaatiotunnus}, ${julkaisu.julkaisutyyppi}, ${julkaisu.julkaisuvuosi}, ${julkaisu.julkaisunnimi}, ${julkaisu.tekijat}, ${julkaisu.julkaisuntekijoidenlukumaara}, ${julkaisu.konferenssinvakiintunutnimi}, ${julkaisu.emojulkaisunnimi}, ${julkaisu.isbn}, ${julkaisu.emojulkaisuntoimittajat}, ${julkaisu.lehdenjulkaisusarjannimi}, ${julkaisu.issn}, ${julkaisu.volyymi}, ${julkaisu.numero}, ${julkaisu.sivut}, ${julkaisu.artikkelinumero}, ${julkaisu.kustantaja}, ${julkaisu.julkaisunkustannuspaikka}, ${julkaisu.julkaisunkieli}, ${julkaisu.julkaisunkansainvalisyys}, ${julkaisu.julkaisumaa}, ${julkaisu.kansainvalinenyhteisjulkaisu}, ${julkaisu.yhteisjulkaisuyrityksenkanssa}, ${julkaisu.doitunniste}, ${julkaisu.pysyvaverkkoosoite}, ${julkaisu.julkaisurinnakkaistallennettu}, ${julkaisu.avoinsaatavuus}, ${julkaisu.rinnakkaistallennetunversionverkkoosoite}, ${julkaisu.lisatieto}, ${julkaisu.jufotunnus}, ${julkaisu.jufoluokitus}, ${julkaisu.julkaisuntila}, ${julkaisu.username}, ${julkaisu.modified}) RETURNING id", req.body, + "INSERT INTO organisaatiotekija (julkaisuid, etunimet, sukunimi, orcid, rooli)" + "values (id, ${etunimet}, ${sukunimi}, ${orcid}, ${rooli})", req.body.organisaatiotekija)
     .then(function() {
         res.status(200)
         .json({
-            julkaisu: Julkaisu,
-            organisaatiotekija: organisaatiotekija,
-            tieteenala: tieteenala,
-            taiteenala: taiteenala,
-            avainsanat: avainsanat,
-            taidealantyyppikategoria: taidealantyyppikategoria,
-            lisatieto: lisatieto
+            message: "Insert into julkaisu successfull"
+            // julkaisu: Julkaisu,
+            // organisaatiotekija: organisaatiotekija,
+            // tieteenala: tieteenala,
+            // taiteenala: taiteenala,
+            // avainsanat: avainsanat,
+            // taidealantyyppikategoria: taidealantyyppikategoria,
+            // lisatieto: lisatieto
         });
     })
     .catch(function(err: any) {
