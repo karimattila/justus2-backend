@@ -42,11 +42,11 @@ const getRedis = (rediskey: string, success: any, error: any) => {
 // All GET requests first
 // Get all julkaisut
 function getJulkaisut(req: Request, res: Response, next: NextFunction) {
-    db.any("select julkaisu.*, organisaatiotekija.etunimet, organisaatiotekija.sukunimi, organisaatiotekija.orcid, organisaatiotekija.rooli, tieteenala.tieteenalakoodi, tieteenala.jnro, taiteenala.taiteenalakoodi, taiteenala.jnro, avainsana.avainsana AS avainsanat, taidealantyyppikategoria.tyyppikategoria AS taidealantyyppikategoria, lisatieto.lisatietotyyppi, lisatieto.lisatietoteksti from julkaisu, organisaatiotekija, tieteenala, taiteenala, avainsana, taidealantyyppikategoria, lisatieto where julkaisu.id = organisaatiotekija.julkaisuid AND julkaisu.id = tieteenala.julkaisuid AND julkaisu.id= taiteenala.julkaisuid AND julkaisu.id = avainsana.julkaisuid AND julkaisu.id = taidealantyyppikategoria.julkaisuid AND julkaisu.id = lisatieto.julkaisuid")
+    db.any("select julkaisu.*, organisaatiotekija.id AS orgid, organisaatiotekija.etunimet, organisaatiotekija.sukunimi, organisaatiotekija.orcid, organisaatiotekija.rooli, alayksikko.alayksikko, tieteenala.tieteenalakoodi, tieteenala.jnro, taiteenala.taiteenalakoodi, taiteenala.jnro, avainsana.avainsana AS avainsanat, taidealantyyppikategoria.tyyppikategoria AS taidealantyyppikategoria, lisatieto.lisatietotyyppi, lisatieto.lisatietoteksti from julkaisu, organisaatiotekija, alayksikko, tieteenala, taiteenala, avainsana, taidealantyyppikategoria, lisatieto where julkaisu.id = organisaatiotekija.julkaisuid AND organisaatiotekija.id = alayksikko.organisaatiotekijaid AND julkaisu.id = tieteenala.julkaisuid AND julkaisu.id= taiteenala.julkaisuid AND julkaisu.id = avainsana.julkaisuid AND julkaisu.id = taidealantyyppikategoria.julkaisuid AND julkaisu.id = lisatieto.julkaisuid")
         .then((data: any) => {
             res.status(200)
                 .json({
-                    julkaisu: data
+                    julkaisut: oh.ObjectHandlerAllJulkaisut(data)
     });
 })
         .catch((err: any) => {

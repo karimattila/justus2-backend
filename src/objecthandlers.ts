@@ -433,6 +433,76 @@ function ObjectHandlerVirtaEsitäyttö(obj: any): object[] {
 function ObjectHandlerCrossrefEsitäyttö(obj: any): object[] {
     return obj;
 }
+
+function ObjectHandlerAllJulkaisut(obj: any) {
+    return obj.map((x: any) => {
+                return {
+                    julkaisu: {
+                        id: x.id,
+                        organisaatiotunnus: x.organisaatiotunnus,
+                        julkaisutyyppi: x.julkaisutyyppi,
+                        julkaisuvuosi: x.julkaisuvuosi,
+                        julkaisunnimi: x.julkaisunnimi,
+                        tekijat: x.tekijat,
+                        julkaisuntekijoidenlukumaara: x.julkaisuntekijoidenlukumaara,
+                        konferenssinvakiintunutnimi: x.konferenssinvakiintunutnimi,
+                        emojulkaisunnimi: x.emojulkaisunnimi,
+                        isbn: x.isbn,
+                        emojulkaisuntoimittajat: x.emojulkaisuntoimittajat,
+                        lehdenjulkaisusarjannimi: x.lehdenjulkaisusarjannimi,
+                        issn: x.issn,
+                        volyymi: x.volyymi,
+                        numero: x.numero,
+                        sivut: x.sivut,
+                        artikkelinumero: x.artikkelinumero,
+                        kustantaja: x.kustantaja,
+                        julkaisunkustannuspaikka: x.julkaisunkustannuspaikka,
+                        julkaisunkieli: x.julkaisunkieli,
+                        julkaisunkansainvalisyys: x.julkaisunkansainvalisyys,
+                        julkaisumaa: x.julkaisumaa,
+                        kansainvalinenyhteisjulkaisu: x.kansainvalinenyhteisjulkaisu,
+                        yhteisjulkaisuyrityksenkanssa: x.yhteisjulkaisuyrityksenkanssa,
+                        doitunniste: x.doitunniste,
+                        pysyvaverkkoosoite: x.pysyvaverkkoosoite,
+                        avoinsaatavuus: x.avoinsaatavuus,
+                        julkaisurinnakkaistallennettu: x.julkaisurinnakkaistallennettu,
+                        rinnakkaistallennetunversionverkkoosoite: x.rinnakkaistallennetunversionverkkoosoite,
+                        lisatieto: x.lisatietoteksti,
+                        jufotunnus: x.jufotunnus,
+                        jufoluokitus: x.jufoluokitus,
+                        julkaisuntila: x.julkaisuntila,
+                        username: x.username,
+                        modified: x.modified,
+
+                    },
+                    organisaatiotekija: [{
+                        id: x.orgid,
+                        etunimet: x.etunimet,
+                        sukunimi: x.sukunimi,
+                        orcid: x.orcid,
+                        rooli: x.rooli,
+                        alayksikko: x.alayksikko,
+                    }],
+                    tieteenala: [{
+                        tieteenalakoodi: x.tieteenalakoodi,
+                        jnro: x.jnro,
+                    }],
+                    taiteenala: [{
+                        taiteenalakoodi: x.taiteenalakoodi,
+                    }],
+                    avainsanat: [
+                        x.avainsanat,
+                    ],
+                    taidealantyyppikategoria: x.taidealantyyppikategoria,
+                    lisatieto: {
+                        julkaisuvuodenlisatieto: "",
+                        tapahtuma: "",
+                        julkistamispaikkakunta: "",
+                        muutunniste: "",
+                    }
+                };
+    });
+}
 module.exports = {
     ObjectHandlerKielet: ObjectHandlerKielet,
     ObjectHandlerValtiot: ObjectHandlerValtiot,
@@ -452,4 +522,5 @@ module.exports = {
     ObjectHandlerJulkaisutVIRTACR: ObjectHandlerJulkaisutVIRTACR,
     ObjectHandlerVirtaEsitäyttö: ObjectHandlerVirtaEsitäyttö,
     ObjectHandlerCrossrefEsitäyttö: ObjectHandlerCrossrefEsitäyttö,
+    ObjectHandlerAllJulkaisut: ObjectHandlerAllJulkaisut,
 };
