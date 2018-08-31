@@ -62,6 +62,15 @@ function ObjectHandlerTaiteenalat(obj: any): object[] {
             selite: metadata.nimi,
         };
         taiteenalat.push(keyvalues);
+        taiteenalat.sort((a: any, b: any) => {
+            const numA = a.arvo;
+            const numB = b.arvo;
+            if (numA < numB)
+                return -1;
+            if (numA > numB)
+                return 1;
+            return 0;
+        });
     });
         return taiteenalat;
 }
