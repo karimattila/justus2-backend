@@ -300,18 +300,20 @@ function getJulkaisuVirtaCrossrefEsitäyttö(req: Request, res: Response, next: 
 // Post a julkaisu to the database
 // Catch the JSON body and parse it so that we can insert the values into postgres
 function postJulkaisu(req: Request, res: Response, next: NextFunction) {
-    db.task((julkaisuid: any) => {
-        return julkaisuid.one(
+    db.task(() => {
+        return db.one(
             "INSERT INTO julkaisu (organisaatiotunnus, julkaisutyyppi, julkaisuvuosi, julkaisunnimi, tekijat, julkaisuntekijoidenlukumaara, konferenssinvakiintunutnimi, emojulkaisunnimi, isbn, emojulkaisuntoimittajat, lehdenjulkaisusarjannimi, issn, volyymi, numero, sivut, artikkelinumero, kustantaja, julkaisunkustannuspaikka, julkaisunkieli, julkaisunkansainvalisyys, julkaisumaa, kansainvalinenyhteisjulkaisu, yhteisjulkaisuyrityksenkanssa, doitunniste, pysyvaverkkoosoite, julkaisurinnakkaistallennettu, avoinsaatavuus, rinnakkaistallennetunversionverkkoosoite, lisatieto, jufotunnus, jufoluokitus, julkaisuntila, username, modified)" + "values (${julkaisu.organisaatiotunnus}, ${julkaisu.julkaisutyyppi}, ${julkaisu.julkaisuvuosi}, ${julkaisu.julkaisunnimi}, ${julkaisu.tekijat}, ${julkaisu.julkaisuntekijoidenlukumaara}, ${julkaisu.konferenssinvakiintunutnimi}, ${julkaisu.emojulkaisunnimi}, ${julkaisu.isbn}, ${julkaisu.emojulkaisuntoimittajat}, ${julkaisu.lehdenjulkaisusarjannimi}, ${julkaisu.issn}, ${julkaisu.volyymi}, ${julkaisu.numero}, ${julkaisu.sivut}, ${julkaisu.artikkelinumero}, ${julkaisu.kustantaja}, ${julkaisu.julkaisunkustannuspaikka}, ${julkaisu.julkaisunkieli}, ${julkaisu.julkaisunkansainvalisyys}, ${julkaisu.julkaisumaa}, ${julkaisu.kansainvalinenyhteisjulkaisu}, ${julkaisu.yhteisjulkaisuyrityksenkanssa}, ${julkaisu.doitunniste}, ${julkaisu.pysyvaverkkoosoite}, ${julkaisu.julkaisurinnakkaistallennettu}, ${julkaisu.avoinsaatavuus}, ${julkaisu.rinnakkaistallennetunversionverkkoosoite}, ${julkaisu.lisatieto}, ${julkaisu.jufotunnus}, ${julkaisu.jufoluokitus}, ${julkaisu.julkaisuntila}, ${julkaisu.username}, ${julkaisu.modified}) RETURNING id", req.body)
 
-    .then((id: any) => {
-       // console.log(JSON.parse(id.id));
-        db.one("INSERT INTO organisaatiotekija (julkaisuid, etunimet, sukunimi, orcid, rooli) VALUES (" + JSON.stringify(id.id) + ", 'Victor', 'gallen', 'something', 'developer')");
+    .then((obj: any) => {
+        return db.one("INSERT INTO organisaatiotekija (julkaisuid, etunimet, sukunimi, orcid, rooli)" + "values (" + JSON.parse(obj.id) + ", 'asd', 'asd', 'asd', 'asd') RETURNING julkaisuid");
 })
-    .then((id: any) =>  {
+    .then((obj: any) => {
+        return db.one("INSERT INTO taiteenala (julkaisuid, tyyppikategoria)" + "values (" + JSON.parse(obj.id) + ", ${tyyppikategoria}) RETURNING julkaisuid)", req.body.taiteenala);
+    })
+    .then((obj: any) =>  {
         res.status(200)
         .json({
-            message: id,
+            message: obj,
             // julkaisu: Julkaisu,
             // organisaatiotekija: organisaatiotekija,
             // tieteenala: tieteenala,
