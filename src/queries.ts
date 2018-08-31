@@ -5,6 +5,7 @@ const https = require("https");
 const promise = require("bluebird");
 const kp = require("./koodistopalvelu");
 const oh = require("./objecthandlers");
+const fs = require("fs");
 // Options used for our pgp const
 const options = {
     promiseLib: promise
@@ -330,6 +331,16 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
 }
 
 
+// GET ORGANISAATIOLISTAUS
+function getOrganisaatioListaus(req: Request, res: Response, next: NextFunction) {
+    fs.readFile("/vagrant/src/jsonFiles/organisaatiolistaus.json", "utf8", function read(err: any, data: any) {
+        if (err) {
+            throw err;
+        }
+        res.send(JSON.parse(data));
+    });
+}
+
 
 // Post orgtekija, just a test
 function postOrg(req: Request, res: Response, next: NextFunction) {
@@ -388,6 +399,7 @@ module.exports = {
     getJufotISSN: getJufotISSN,
     getJulkaisutVIRTACR: getJulkaisutVIRTACR,
     getJulkaisuVirtaCrossrefEsitäyttö: getJulkaisuVirtaCrossrefEsitäyttö,
+    getOrganisaatioListaus: getOrganisaatioListaus,
     // POST requests
     postJulkaisu: postJulkaisu,
     postOrg: postOrg,
