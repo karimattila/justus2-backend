@@ -85,6 +85,15 @@ function ObjectHandlerTaidealantyyppikategoria(obj: any): object[] {
             selite: metadata.nimi,
         };
         taidealantyyppikategoria.push(keyvalues);
+        taidealantyyppikategoria.sort((a: any, b: any) => {
+            const numA = a.arvo;
+            const numB = b.arvo;
+            if (numA < numB)
+                return -1;
+            if (numA > numB)
+                return 1;
+            return 0;
+        });
     });
         return taidealantyyppikategoria;
 }
@@ -130,7 +139,7 @@ function ObjectHandlerAlayksikot(obj: any): object[] {
     obj.forEach((e: any) => {
             const metadata = e.metadata.find(( e: any ) => e.kieli === "FI");
             const keyvalues = {
-                arvo: e.koodiArvo.split("-").pop(),
+                arvo: e.koodiArvo,
                 selite: metadata.nimi,
             };
             alayksikot.push(keyvalues);

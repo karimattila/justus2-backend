@@ -305,11 +305,26 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
         return db.one(
             "INSERT INTO julkaisu (organisaatiotunnus, julkaisutyyppi, julkaisuvuosi, julkaisunnimi, tekijat, julkaisuntekijoidenlukumaara, konferenssinvakiintunutnimi, emojulkaisunnimi, isbn, emojulkaisuntoimittajat, lehdenjulkaisusarjannimi, issn, volyymi, numero, sivut, artikkelinumero, kustantaja, julkaisunkustannuspaikka, julkaisunkieli, julkaisunkansainvalisyys, julkaisumaa, kansainvalinenyhteisjulkaisu, yhteisjulkaisuyrityksenkanssa, doitunniste, pysyvaverkkoosoite, julkaisurinnakkaistallennettu, avoinsaatavuus, rinnakkaistallennetunversionverkkoosoite, lisatieto, jufotunnus, jufoluokitus, julkaisuntila, username, modified)" + "values (${julkaisu.organisaatiotunnus}, ${julkaisu.julkaisutyyppi}, ${julkaisu.julkaisuvuosi}, ${julkaisu.julkaisunnimi}, ${julkaisu.tekijat}, ${julkaisu.julkaisuntekijoidenlukumaara}, ${julkaisu.konferenssinvakiintunutnimi}, ${julkaisu.emojulkaisunnimi}, ${julkaisu.isbn}, ${julkaisu.emojulkaisuntoimittajat}, ${julkaisu.lehdenjulkaisusarjannimi}, ${julkaisu.issn}, ${julkaisu.volyymi}, ${julkaisu.numero}, ${julkaisu.sivut}, ${julkaisu.artikkelinumero}, ${julkaisu.kustantaja}, ${julkaisu.julkaisunkustannuspaikka}, ${julkaisu.julkaisunkieli}, ${julkaisu.julkaisunkansainvalisyys}, ${julkaisu.julkaisumaa}, ${julkaisu.kansainvalinenyhteisjulkaisu}, ${julkaisu.yhteisjulkaisuyrityksenkanssa}, ${julkaisu.doitunniste}, ${julkaisu.pysyvaverkkoosoite}, ${julkaisu.julkaisurinnakkaistallennettu}, ${julkaisu.avoinsaatavuus}, ${julkaisu.rinnakkaistallennetunversionverkkoosoite}, ${julkaisu.lisatieto}, ${julkaisu.jufotunnus}, ${julkaisu.jufoluokitus}, ${julkaisu.julkaisuntila}, ${julkaisu.username}, ${julkaisu.modified}) RETURNING id", req.body)
 
-    .then((obj: any) => {
-        return db.one("INSERT INTO organisaatiotekija (julkaisuid, etunimet, sukunimi, orcid, rooli)" + "values (" + JSON.parse(obj.id) + ", 'asd', 'asd', 'asd', 'asd') RETURNING julkaisuid");
-})
-    .then((obj: any) => {
-        return db.one("INSERT INTO taiteenala (julkaisuid, tyyppikategoria)" + "values (" + JSON.parse(obj.id) + ", ${tyyppikategoria}) RETURNING julkaisuid)", req.body.taiteenala);
+    .then((julkaisuid: any) => {
+        return db.one("INSERT INTO tieteenala (tieteenalakoodi, jnro, julkaisuid)" + "values ('joku koodi', 5 , " + JSON.parse(julkaisuid.id) + ") RETURNING julkaisuid", req.body.tieteenala);
+    })
+    .then((julkaisuid: any) => {
+        return db.one("INSERT INTO taiteenala (julkaisuid, taiteenalakoodi, jnro)" + "values (" + JSON.parse(julkaisuid.id) + ", 'joku taiteenalakoodi', 6) RETURNING julkaisuid", req.body.taiteenala);
+    })
+    .then((julkaisuid: any) => {
+        return db.one("INSERT INTO avainsana (julkaisuid, avainsana)" + "values (" + JSON.parse(julkaisuid.id) + ", 'joku avainsana') RETURNING julkaisuid", req.body.avainsanat);
+    })
+    .then((julkaisuid: any) => {
+        return db.one("INSERT INTO taidealantyyppikategoria (julkaisuid, tyyppikategoria)" + "values (" + JSON.parse(julkaisuid.id) + ", 7) RETURNING julkaisuid", req.body.taidealantyyppikategoria);
+    })
+    .then((julkaisuid: any) => {
+        return db.one("INSERT INTO lisatieto (julkaisuid, lisatietotyyppi, lisatietoteksti)" + "values (" + JSON.parse(julkaisuid.id) + ", 'joku lisatietotyyppi, 'joku lisatietoteksti') RETURNING julkaisuid", req.body.lisatieto);
+    })
+    .then((julkaisuid: any) => {
+        return db.one("INSERT INTO organisaatiotekija (julkaisuid, etunimet, sukunimi, orcid, rooli)" + "values (" + JSON.parse(julkaisuid.id) + ", 'asd', 'asd', 'asd', 'asd') RETURNING id", req.body.organisaatiotekija);
+    })
+    .then((organisaatiotekijaid: any) => {
+        return db.one("INSERT INTO alayksikko (organisaatiotekijaid, alayksikko)" + "values (" + JSON.parse(organisaatiotekijaid.id) + ", 'joku alayksikko') RETURNING organisaatiotekijaid", req.body.alayksikko);
     })
     .then((obj: any) =>  {
         res.status(200)
@@ -341,6 +356,14 @@ function getOrganisaatioListaus(req: Request, res: Response, next: NextFunction)
     });
 }
 
+function getUserLaurea(req: Request, res: Response, next: NextFunction) {
+    fs.readFile("/vagrant/src/jsonFiles/laurea.json", "utf8", function read(err: any, data: any) {
+        if (err) {
+            throw err;
+        }
+        res.send(JSON.parse(data));
+    });
+}
 
 // Post orgtekija, just a test
 function postOrg(req: Request, res: Response, next: NextFunction) {
@@ -400,6 +423,7 @@ module.exports = {
     getJulkaisutVIRTACR: getJulkaisutVIRTACR,
     getJulkaisuVirtaCrossrefEsitäyttö: getJulkaisuVirtaCrossrefEsitäyttö,
     getOrganisaatioListaus: getOrganisaatioListaus,
+    getUserLaurea: getUserLaurea,
     // POST requests
     postJulkaisu: postJulkaisu,
     postOrg: postOrg,
