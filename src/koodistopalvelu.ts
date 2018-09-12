@@ -56,7 +56,42 @@ function HTTPGETcombiner (URL: String, res: Response, objecthandler: Function ) 
     });
 }
 
-function HTTPGETshow (URL: String, res: Response, objecthandler: Function) {
+function HTTPGETshow (URL: String, res: Response, objecthandler: Function, secondURL?: String) {
+    if (secondURL) {
+        const urls = [URL, secondURL];
+        const first: object []  = [
+        ];
+        const second: object [] = [
+        ];
+        const combined: object [] = [
+        ];
+        let requests: number = 0;
+        for (const i in urls) {
+        let data = "";
+        https.get(urls[i], (resp: Response) => {
+            resp.on("data", (chunk: any) => {
+                data += chunk;
+            });
+            resp.on("end", () => {
+                requests ++;
+                if (requests === 1) {
+                    first.push(JSON.parse(data));
+                }
+                if (requests === 2) {
+                // console.log("combined data as string" + data);
+                second.push(JSON.parse(data));
+                    combined.push(JSON.parse(JSON.stringify(first)), JSON.parse(JSON.stringify(second)));
+                        // console.log("This is the data : " + combined);
+                        res.send(objecthandler(JSON.parse(JSON.stringify(combined))));
+                }
+            });
+        })
+        .on("error", (err: Error) => {
+            console.log("Error: " + err.message);
+        });
+        }
+    }
+    else {
     https.get(URL, (resp: Response) => {
         let data = "";
         resp.on("data", (chunk: any) => {
@@ -70,6 +105,7 @@ function HTTPGETshow (URL: String, res: Response, objecthandler: Function) {
     .on("error", (err: Error) => {
         console.log("Error: " + err.message);
     });
+    }
 }
 
 function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: Function ) {

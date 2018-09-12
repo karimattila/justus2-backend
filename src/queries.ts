@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { FILE } from "dns";
 const schedule = require("node-schedule");
 // https will be used for external API calls
 const https = require("https");
@@ -11,7 +12,7 @@ const options = {
     promiseLib: promise
 };
 
-const BASEURLFINTO = "https://api.finto.fi/rest/v1/yso/search?type=skos%3AConcept&unique=true&lang=FI&query=";
+const BASEURLFINTO = "https://api.finto.fi/rest/v1/yso/search?type=skos%3AConcept&unique=true&lang=";
 const BASEURLJUFO =   "https://jufo-rest.csc.fi/v1.0/etsi.php?tyyppi=";
 
 // Initializing postgres connection by using pg-promise
@@ -198,9 +199,17 @@ function getUser(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
 function getAvainSanat(req: Request, res: Response, next: NextFunction) {
-        const apiurl: string = BASEURLFINTO + req.query.q + "*";
+        if (req.query.lang === "FI" ) {
+           const url: string = BASEURLFINTO + req.query.lang + "&query=" + req.query.q + "*";
+           const secondurl: string = BASEURLFINTO + "EN" + "&query=" + req.query.q + "*";
+           kp.HTTPGETshow(url, res, oh.ObjectHandlerAvainsanat, secondurl);
+        }
+        else {
+        const apiurl: string = BASEURLFINTO + req.query.lang + "&query=" + req.query.q + "*";
         console.log("This is the apiurl: " + apiurl);
+        console.log("HELLO THIS WORKS YESYESYS");
         kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerAvainsanat);
+    }
 }
 function getJulkaisuSarjat(req: Request, res: Response, next: NextFunction) {
         const apiurl: string = BASEURLJUFO + "1&nimi=" + req.query.q;
