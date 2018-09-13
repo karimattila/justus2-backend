@@ -269,38 +269,22 @@ function settoRedis(rediskey: string, obj: object[]) {
 function ObjectHandlerAvainsanat(obj: any): object[] {
     const avainsanat: object [] = [
     ];
-        console.log("Type of obj avainsanat: " + typeof obj);
-        console.log("stringied avainsanat obj: " + JSON.stringify(obj));
         if (obj instanceof Array) {
             obj.forEach((e: any) => {
-            // e["results"].map((x: any) => {
-                console.log("This is the e: " + e);
-                console.log("This is the e in string: " + JSON.stringify(e));
-                // const new = JSON.stringify(e);
-                // const newe = JSON.parse(e);
-                // console.log("This is the newe: " + JSON.stringify(newe));
-                // const test = newe.results.map((y: any) => y);
-                // console.log("this is the test stringified: " + JSON.stringify(test));
-                // console.log("this is the test: " + test);
                 e[0].results.forEach((x: any ) => {
-                    console.log("This is the x :" + JSON.stringify((x)));
                     const vals = {
                         localname: x.localname,
                         prefLabel: x.prefLabel,
                         altLabel: x.altLabel,
                     };
-                    console.log("localname :" + e.localname);
-                    // console.log("preflabel is : " + e.preflabel);
                     avainsanat.push(vals);
-                    console.log("the values: " + JSON.stringify(vals));
-                    console.log("the keywords: " + JSON.stringify(avainsanat));
             // });
         });
     });
             return avainsanat;
         }
         else {
-        return obj["results"].map((e: any) => {
+        return obj.results.map((e: any) => {
             return {
                 localname: e.localname,
                 prefLabel: e.prefLabel,

@@ -199,7 +199,7 @@ function getUser(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
 function getAvainSanat(req: Request, res: Response, next: NextFunction) {
-        if (req.query.lang === "FI" ) {
+        if (req.query.lang.toLowerCase() === "fi" ) {
            const url: string = BASEURLFINTO + req.query.lang + "&query=" + req.query.q + "*";
            const secondurl: string = BASEURLFINTO + "EN" + "&query=" + req.query.q + "*";
            kp.HTTPGETshow(url, res, oh.ObjectHandlerAvainsanat, secondurl);
@@ -207,7 +207,6 @@ function getAvainSanat(req: Request, res: Response, next: NextFunction) {
         else {
         const apiurl: string = BASEURLFINTO + req.query.lang + "&query=" + req.query.q + "*";
         console.log("This is the apiurl: " + apiurl);
-        console.log("HELLO THIS WORKS YESYESYS");
         kp.HTTPGETshow(apiurl, res, oh.ObjectHandlerAvainsanat);
     }
 }
