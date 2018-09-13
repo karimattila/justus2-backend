@@ -20,6 +20,15 @@ function ObjectHandlerKielet(obj: any): object[] {
             selite: metadata.nimi,
         };
         kielet.push(keyvalues);
+        kielet.sort((a: any, b: any) => {
+            const numA = a.arvo;
+            const numB = b.arvo;
+            if (numA < numB)
+                return -1;
+            if (numA > numB)
+                return 1;
+            return 0;
+        });
     });
         return kielet;
 }
@@ -34,6 +43,15 @@ function ObjectHandlerValtiot(obj: any): object[] {
             selite: metadata.nimi,
         };
         valtiot.push(keyvalues);
+        valtiot.sort((a: any, b: any) => {
+            const numA = parseInt(a.arvo);
+            const numB = parseInt(b.arvo);
+            if (numA < numB)
+                return -1;
+            if (numA > numB)
+                return 1;
+            return 0;
+        });
     });
         return valtiot;
 }
@@ -86,8 +104,8 @@ function ObjectHandlerTaidealantyyppikategoria(obj: any): object[] {
         };
         taidealantyyppikategoria.push(keyvalues);
         taidealantyyppikategoria.sort((a: any, b: any) => {
-            const numA = a.arvo;
-            const numB = b.arvo;
+            const numA = parseInt(a.arvo);
+            const numB = parseInt(b.arvo);
             if (numA < numB)
                 return -1;
             if (numA > numB)
@@ -292,33 +310,7 @@ function ObjectHandlerAvainsanat(obj: any): object[] {
                 };
              });
             }
-}
-
-// function ObjectHandlerAvainsanat(obj: any, determinator: string) {
-//         const avainsanat: object [] = [
-//         ];
-//         if (obj instanceof Array) {
-//         obj.forEach((e: any) => {
-//             const lang = e.find((e: any) => e["@language"] === determinator);
-//             const values = {
-//                 localname: lang.localname,
-//                 prefLabel: lang.prefLabel,
-//                 altLabel: lang.altLabel,
-//             };
-//             avainsanat.push(values);
-            // avainsanat.sort((a: any, b: any) => {
-            //     const letA = a.arvo;
-            //     const letB = b.arvo;
-            //     if (letA < letB)
-            //         return -1;
-            //     if (letA > letB)
-            //         return 1;
-            //     return 0;
-            // });
-//         });
-//             return avainsanat;
-//     }
-// }
+        }
 
 // Objecthandler for Julkaisusarjat from JUFO
 function ObjectHandlerJulkaisusarjat(obj: any): object[] {
