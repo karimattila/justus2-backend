@@ -30,6 +30,7 @@ function UpdateKoodistopalveluRedis(res: Response) {
     setAlaYksikot(res),
     setValtiot(res),
     setJulkaisunLuokat(res),
+    setOrgListaus(res),
     TestFunction());
 }
 
@@ -153,6 +154,9 @@ function setJulkaisunLuokat(res: Response) {
 }
 function setAlaYksikot(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlayksikot", OH.ObjectHandlerAlayksikot);
+}
+function setOrgListaus(res: Response) {
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/oppilaitosnumero/koodi/oppilaitosnumero_00000", res, "getOrgListaus", OH.ObjectHandlerOrgListaus);
 }
 // function setAvainSanat(res: Response) {
 //     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");

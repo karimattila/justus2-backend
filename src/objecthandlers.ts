@@ -483,6 +483,23 @@ function ObjectHandlerJulkaisutVIRTACR(obj: any): object[] {
 // function ObjectHandlerJulkaisutVIRTAPART(obj: any) {
 
 // }
+
+function ObjectHandlerOrgListaus(obj: any) {
+    const orglistaus: object [] = [
+    ];
+        obj.map((e: any) => {
+            const metadata = e.metadata.find((e: any) => e.kieli === "FI");
+
+            const vals = {
+                arvo: e.koodiArvo,
+                selite: metadata.nimi,
+                kuvaus: metadata.kuvaus,
+            };
+            orglistaus.push(vals);
+            return orglistaus;
+        });
+    }
+
 function ObjectHandlerVirtaEsitäyttö(obj: any): object[] {
     return obj;
 }
@@ -579,4 +596,5 @@ module.exports = {
     ObjectHandlerVirtaEsitäyttö: ObjectHandlerVirtaEsitäyttö,
     ObjectHandlerCrossrefEsitäyttö: ObjectHandlerCrossrefEsitäyttö,
     ObjectHandlerAllJulkaisut: ObjectHandlerAllJulkaisut,
+    ObjectHandlerOrgListaus: ObjectHandlerOrgListaus,
 };

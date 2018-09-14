@@ -356,12 +356,13 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
 
 // GET ORGANISAATIOLISTAUS
 function getOrganisaatioListaus(req: Request, res: Response, next: NextFunction) {
-    fs.readFile("/vagrant/src/jsonFiles/organisaatiolistaus.json", "utf8", function read(err: any, data: any) {
-        if (err) {
-            throw err;
-        }
-        res.send(JSON.parse(data));
-    });
+    getRedis("getOrgListaus", function success(reply: any) {
+        res.status(200).json(
+            JSON.parse(reply)
+        );
+}, function error(err: Error) {
+    console.log("Something went wrong");
+});
 }
 
 function getUserLaurea(req: Request, res: Response, next: NextFunction) {
