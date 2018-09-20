@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction, json } from "express";
+import { resolve } from "path";
 const schedule = require("node-schedule");
 const https = require("https");
 
@@ -18,19 +19,27 @@ const OH = require("./objecthandlers");
 schedule.scheduleJob("30 * * * * *", function(res: Response) {
     UpdateKoodistopalveluRedis(res);
 });
+schedule.scheduleJob("45 * * * * *", function(res: Response) {
+    UpdateOrgListaus(res);
+});
+
+function UpdateOrgListaus(res: Response) {
+    setOrgListaus(res);
+}
+
+
 
 function UpdateKoodistopalveluRedis(res: Response) {
     client.on("connect", () =>  console.log("Connected to redis"),
+    setAlaYksikot(res),
     setKielet(res),
     setJulkaisunTilat(res),
     setTaideAlanTyyppiKategoria(res),
     setTaiteenalat(res),
     setTieteenalat(res),
     setTekijanRooli(res),
-    setAlaYksikot(res),
     setValtiot(res),
     setJulkaisunLuokat(res),
-    setOrgListaus(res),
     TestFunction());
 }
 
@@ -109,7 +118,7 @@ function HTTPGETshow (URL: String, res: Response, objecthandler: Function, secon
     }
 }
 
-function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: Function ) {
+function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: Function, orgid?: any) {
     https.get(URL, (resp: Response) => {
         let data = "";
         resp.on("data", (chunk: any) => {
@@ -118,8 +127,14 @@ function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: 
         resp.on("end", () => {
            // The data needs to be in in Object form for us to parse it before adding it to redis
             const newdata = JSON.parse(data);
+            if (orgid) {
+            client.set(redisInfo, JSON.stringify(objecthandler(newdata, orgid)));
+            console.log("Set info for " + redisInfo + " to redis successfully!");
+            }
+            else {
             client.set(redisInfo, JSON.stringify(objecthandler(newdata)));
             console.log("Set info for " + redisInfo + " to redis successfully!");
+            }
         });
     })
     .on("error", (err: Error) => {
@@ -156,7 +171,11 @@ function setAlaYksikot(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlayksikot", OH.ObjectHandlerAlayksikot);
 }
 function setOrgListaus(res: Response) {
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/oppilaitosnumero/koodi/oppilaitosnumero_00000", res, "getOrgListaus", OH.ObjectHandlerOrgListaus);
+    const orgid = ["02535", "02536", "02623", "10056",  "02631",  "02467",  "02504",  "02473",  "02469",  "10118",  "02470",  "02629",  "02358",  "10065",  "02507",  "02472",  "02630",  "10066", "02557", "02537", "02509", "10103", "02471"];
+    for (const i in orgid) {
+        console.log("the i: " + orgid[i]);
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/oppilaitosnumero/koodi/oppilaitosnumero_" + orgid[i], res, "getOrgListaus", OH.ObjectHandlerOrgListaus, orgid);
+    }
 }
 // function setAvainSanat(res: Response) {
 //     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");

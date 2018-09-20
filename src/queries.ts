@@ -199,7 +199,7 @@ function getUser(req: Request, res: Response, next: NextFunction) {
     // TODO ADD CODE HERE
 }
 function getAvainSanat(req: Request, res: Response, next: NextFunction) {
-        if (req.query.lang.toLowerCase() === "fi" ) {
+        if (req.query.lang.toLowerCase() === "fi" || req.query.lang.toLowerCase() === "sv") {
            const url: string = BASEURLFINTO + req.query.lang + "&query=" + req.query.q + "*";
            const secondurl: string = BASEURLFINTO + "EN" + "&query=" + req.query.q + "*";
            kp.HTTPGETshow(url, res, oh.ObjectHandlerAvainsanat, secondurl);

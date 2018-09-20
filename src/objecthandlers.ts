@@ -9,6 +9,86 @@ const redis = require("redis");
 const client = redis.createClient();
 
 
+const getRedis = (rediskey: string, success: any, error: any) => {
+    client.mget(rediskey, function (err: Error, reply: any) {
+        if (!err) {
+            success(reply);
+        }
+        else {
+            error(err);
+        }
+    });
+};
+
+const visiblefields = [
+    "etunimet",
+  "sukunimi",
+  "julkaisutyyppi",
+  "julkaisuvuosi",
+  "julkaisuvuodenlisatieto",
+  "julkaisunnimi",
+  "tekijat",
+  "julkaisuntekijoidenlukumaara",
+  "organisaatiotekija",
+  "konferenssinvakiintunutnimi",
+  "isbn",
+  "issn",
+  "volyymi",
+  "numero",
+  "lehdenjulkaisusarjannimi",
+  "kustantaja",
+  "julkaisunkansainvalisyys",
+  "tieteenala",
+  "taiteenala",
+  "taidealantyyppikategoria",
+  "kansainvalinenyhteisjulkaisu",
+  "yhteisjulkaisuyrityksenkanssa",
+  "avoinsaatavuus",
+  "julkaisurinnakkaistallennettu",
+  "rinnakkaistallennetunversionverkkoosoite",
+  "emojulkaisunnimi",
+  "emojulkaisuntoimittajat",
+  "sivut",
+  "artikkelinumero",
+  "julkaisunkustannuspaikka",
+  "avainsanat",
+  "julkaisumaa",
+  "julkistamispaikkakunta",
+  "tapahtumanlisatieto",
+  "julkaisunkieli",
+  "doitunniste",
+  "muutunniste",
+  "pysyvaverkkoosoite",
+  "tekijanrooli",
+  "lisatieto"
+];
+const requiredFields = [
+    "etunimet",
+    "sukunimi",
+    "julkaisutyyppi",
+    "julkaisuvuosi",
+    "julkaisunnimi",
+    "tekijat",
+    "julkaisuntekijoidenlukumaara",
+    "organisaatiotekija",
+    "alayksikko",
+    "konferenssinvakiintunutnimi",
+    "isbn",
+    "issn",
+    "lehdenjulkaisusarjannimi",
+    "kustantaja",
+    "julkaisunkansainvalisyys",
+    "tieteenala",
+    "tieteenalakoodi",
+    "kansainvalinenyhteisjulkaisu",
+    "yhteisjulkaisuyrityksenkanssa",
+    "avoinsaatavuus",
+    "julkaisurinnakkaistallennettu",
+    "rinnakkaistallennetunversionverkkoosoite"
+];
+
+
+
 // Objecthandler for Koodistopalvelu kielet
 function ObjectHandlerKielet(obj: any): object[] {
     const kielet: object[] = [
@@ -483,21 +563,79 @@ function ObjectHandlerJulkaisutVIRTACR(obj: any): object[] {
 // function ObjectHandlerJulkaisutVIRTAPART(obj: any) {
 
 // }
+function getrediscallback(key: string, callbacker: Function) {
+       getRedis(key, function success(reply: string) {
+        // console.log("this is the reply: " + reply);
+        const newdata = JSON.parse(reply);
+            callbacker(newdata);
+            },
+function error(err: Error) {
+    console.log("Something went wrong" + err);
+});
+}
 
-function ObjectHandlerOrgListaus(obj: any) {
+function ObjectHandlerOrgListaus(obj: any, orgid: any) {
     const orglistaus: object [] = [
     ];
-        obj.map((e: any) => {
-            const metadata = e.metadata.find((e: any) => e.kieli === "FI");
+        console.log("The init object: " + JSON.stringify(obj.metadata[0].nimi));
+        // console.log("The orgids: " + orgid);
+        orgid.forEach((y: any) => {
+            getrediscallback("getAlayksikot", getData);
+            function getData(reply: any) {
+                const alayksikot: object[]  = [
+                ];
+                alayksikot.push(reply);
+                parseredis(alayksikot);
+            }
+            function parseredis(object: object []) {
+                const yksikotarray: object [] = [
+                ];
 
-            const vals = {
-                arvo: e.koodiArvo,
-                selite: metadata.nimi,
-                kuvaus: metadata.kuvaus,
+                object.forEach((e: any) => {
+                    e.map((x: any) => {
+                    // console.log("The x: " + JSON.stringify(x));
+                    // console.log(orgid);
+                    const determinatormatch = x.arvo.slice(0, x.arvo.indexOf("-"));
+                    // console.log("The determinatormatch: " + determinatormatch);
+                    if (y === determinatormatch) {
+                        // console.log("The y: " + y);
+                        // console.log("The x.arvo: " + x.arvo );
+                        // console.log("The x.selite: " + x.selite);
+                    const yksikot = {
+                        arvo: x.arvo,
+                        selite: x.selite,
+                    };
+                    yksikotarray.push(yksikot);
+                    // console.log("the yksikot: " + JSON.stringify(yksikot));
+                    }
+                  });
+                });
+            // const metadata = y.metadata.find(( e: any ) => e.kieli === "FI");
+            const oneorg = {
+                arvo: y,
+                selite: obj.metadata[0].nimi,
+                kuvaus: obj.metadata[0].kuvaus,
+                alayksikot: yksikotarray,
+                // alayksikot: any = [
+                //     vuosi: obj.koodiArvo,
+                //     test: [{
+                //     arvo: "test",
+                //     selite: "testing",
+                //     }
+                //     ],
+                // ],
+                visiblefields,
+                requiredFields,
+
             };
-            orglistaus.push(vals);
+            orglistaus.push(oneorg);
+            // console.log("The oneorg: " + JSON.stringify(oneorg));
+            // console.log("The orglistaus: " + JSON.stringify(orglistaus));
+            settoRedis("getOrgListaus", orglistaus);
+        }
+    });
+
             return orglistaus;
-        });
     }
 
 function ObjectHandlerVirtaEsitäyttö(obj: any): object[] {
