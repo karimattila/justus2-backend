@@ -577,10 +577,7 @@ function error(err: Error) {
 function ObjectHandlerOrgListaus(obj: any, orgid: any) {
     const orglistaus: object [] = [
     ];
-    console.log("The object: " + JSON.stringify(obj));
-    console.log("The length of the obj: " + obj.length);
     obj.forEach((e: any) => {
-        // console.log("the e: " + JSON.stringify(e));
         getrediscallback("getAlayksikot", getData);
             function getData(reply: any) {
                 const alayksikot: object[]  = [
@@ -591,19 +588,56 @@ function ObjectHandlerOrgListaus(obj: any, orgid: any) {
             function parseredis(object: object []) {
                 const yksikotarray: object [] = [
                 ];
+                const yksikot2017: object [] = [
+                ];
+                const yksikot2016: object [] = [
+                ];
+                const yksikot2018: object [] = [
+                ];
+                const twntyeight = {
+                    vuosi: "2018",
+                    yksikot: yksikot2018,
+                };
+                const twntyseven = {
+                    vuosi: "2017",
+                    yksikot: yksikot2017
+                };
+                const twntysix = {
+                    vuosi: "2016",
+                    yksikot: yksikot2016
+                };
                 object.forEach((l: any) => {
                     l.map((x: any) => {
                     const determinatormatch = x.arvo.slice(0, x.arvo.indexOf("-"));
-                    if (e.koodiArvo === determinatormatch) {
-                        // console.log("The e.koodiarvo: " + e.koodiArvo + " and the detmatch: " + determinatormatch);
-                    const yksikot = {
+                    const year = x.arvo.split("-")[1].split("-")[0];
+                    if (e.koodiArvo === determinatormatch && year === "2017") {
+                    const yksikot27 = {
+                        arvo: x.arvo,
+                        selite: x.selite,
+                     };
+                    yksikot2017.push(yksikot27);
+                }
+                else if (e.koodiArvo === determinatormatch && year === "2018") {
+                    const yksikot28 = {
                         arvo: x.arvo,
                         selite: x.selite,
                     };
-                    yksikotarray.push(yksikot);
-                    }
+                    yksikot2018.push(yksikot28);
+                }
+                else if (e.koodiArvo === determinatormatch && year != "2017" && year != "2018") {
+                    const yksikot26 = {
+                        arvo: x.arvo,
+                        selite: x.selite,
+                     };
+                    yksikot2016.push(yksikot26);
+                }
+
                   });
                 });
+                yksikotarray.push(twntyeight);
+                yksikotarray.push(twntyseven);
+                yksikotarray.push(twntysix);
+
             const oneorg = {
                 arvo: e.koodiArvo,
                 selite: e.metadata[0].nimi,
@@ -613,12 +647,9 @@ function ObjectHandlerOrgListaus(obj: any, orgid: any) {
                 requiredFields,
             };
             orglistaus.push(oneorg);
-            // Logthatshit(orglistaus, something);
             settoRedis("getOrgListaus", orglistaus);
         }
 });
-// Logthatshit(orglistaus, something);
-            // Logthatshit(orglistaus, something);
             return orglistaus;
     }
 function Logthatshit(obj: any, callback: Function) {

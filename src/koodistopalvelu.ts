@@ -120,14 +120,12 @@ function HTTPGETshow (URL: String, res: Response, objecthandler: Function, secon
 
 function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: Function, orgid?: any) {
     if (objecthandler.name === "ObjectHandlerOrgListaus") {
-        console.log("hello");
         const somnething: object [] = [];
         let requests: number = 0;
         for (const i in orgid) {
         console.log(orgid[i][0]);
         if (orgid[i][0] === "4") {
             https.get("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tutkimusorganisaatio/koodi/tutkimusorganisaatio_" + orgid[i], (resp: Response) => {
-                console.log("The orgid : " + orgid[i]);
                 let data = "";
                 resp.on("data", (chunk: any) => {
                     data += chunk;
@@ -179,7 +177,6 @@ function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: 
            // The data needs to be in in Object form for us to parse it before adding it to redis
             const newdata = JSON.parse(data);
             client.set(redisInfo, JSON.stringify(objecthandler(newdata)));
-            console.log("Set info for " + redisInfo + " to redis successfully!");
         });
     })
     .on("error", (err: Error) => {
