@@ -577,10 +577,11 @@ function error(err: Error) {
 function ObjectHandlerOrgListaus(obj: any, orgid: any) {
     const orglistaus: object [] = [
     ];
-        console.log("The init object: " + JSON.stringify(obj.metadata[0].nimi));
-        // console.log("The orgids: " + orgid);
-        orgid.forEach((y: any) => {
-            getrediscallback("getAlayksikot", getData);
+    console.log("The object: " + JSON.stringify(obj));
+    console.log("The length of the obj: " + obj.length);
+    obj.forEach((e: any) => {
+        // console.log("the e: " + JSON.stringify(e));
+        getrediscallback("getAlayksikot", getData);
             function getData(reply: any) {
                 const alayksikot: object[]  = [
                 ];
@@ -590,54 +591,44 @@ function ObjectHandlerOrgListaus(obj: any, orgid: any) {
             function parseredis(object: object []) {
                 const yksikotarray: object [] = [
                 ];
-
-                object.forEach((e: any) => {
-                    e.map((x: any) => {
-                    // console.log("The x: " + JSON.stringify(x));
-                    // console.log(orgid);
+                object.forEach((l: any) => {
+                    l.map((x: any) => {
                     const determinatormatch = x.arvo.slice(0, x.arvo.indexOf("-"));
-                    // console.log("The determinatormatch: " + determinatormatch);
-                    if (y === determinatormatch) {
-                        // console.log("The y: " + y);
-                        // console.log("The x.arvo: " + x.arvo );
-                        // console.log("The x.selite: " + x.selite);
+                    if (e.koodiArvo === determinatormatch) {
+                        // console.log("The e.koodiarvo: " + e.koodiArvo + " and the detmatch: " + determinatormatch);
                     const yksikot = {
                         arvo: x.arvo,
                         selite: x.selite,
                     };
                     yksikotarray.push(yksikot);
-                    // console.log("the yksikot: " + JSON.stringify(yksikot));
                     }
                   });
                 });
-            // const metadata = y.metadata.find(( e: any ) => e.kieli === "FI");
             const oneorg = {
-                arvo: y,
-                selite: obj.metadata[0].nimi,
-                kuvaus: obj.metadata[0].kuvaus,
+                arvo: e.koodiArvo,
+                selite: e.metadata[0].nimi,
+                kuvaus: e.metadata[0].kuvaus,
                 alayksikot: yksikotarray,
-                // alayksikot: any = [
-                //     vuosi: obj.koodiArvo,
-                //     test: [{
-                //     arvo: "test",
-                //     selite: "testing",
-                //     }
-                //     ],
-                // ],
                 visiblefields,
                 requiredFields,
-
             };
             orglistaus.push(oneorg);
-            // console.log("The oneorg: " + JSON.stringify(oneorg));
-            // console.log("The orglistaus: " + JSON.stringify(orglistaus));
+            // Logthatshit(orglistaus, something);
             settoRedis("getOrgListaus", orglistaus);
         }
-    });
-
+});
+// Logthatshit(orglistaus, something);
+            // Logthatshit(orglistaus, something);
             return orglistaus;
     }
-
+function Logthatshit(obj: any, callback: Function) {
+    console.log("The last orglistaus: " + obj);
+    callback(obj);
+}
+function something(obj: any) {
+    console.log("The last object times two: " + obj);
+    settoRedis("getOrgListaus", obj);
+}
 function ObjectHandlerVirtaEsitäyttö(obj: any): object[] {
     return obj;
 }

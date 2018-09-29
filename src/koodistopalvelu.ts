@@ -119,6 +119,57 @@ function HTTPGETshow (URL: String, res: Response, objecthandler: Function, secon
 }
 
 function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: Function, orgid?: any) {
+    if (objecthandler.name === "ObjectHandlerOrgListaus") {
+        console.log("hello");
+        const somnething: object [] = [];
+        let requests: number = 0;
+        for (const i in orgid) {
+        console.log(orgid[i][0]);
+        if (orgid[i][0] === "4") {
+            https.get("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tutkimusorganisaatio/koodi/tutkimusorganisaatio_" + orgid[i], (resp: Response) => {
+                console.log("The orgid : " + orgid[i]);
+                let data = "";
+                resp.on("data", (chunk: any) => {
+                    data += chunk;
+                });
+                resp.on("end", () => {
+                    requests ++;
+                   // The data needs to be in in Object form for us to parse it before adding it to redis
+                    const newdata = JSON.parse(data);
+                    somnething.push(newdata);
+                    if (requests === orgid.length) {
+                    client.set(redisInfo, JSON.stringify(objecthandler(somnething, orgid)));
+                    }
+                });
+            })
+            .on("error", (err: Error) => {
+                console.log("Error: " + err.message);
+            });
+        }
+        else {
+        https.get("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/oppilaitosnumero/koodi/oppilaitosnumero_" + orgid[i], (resp: Response) => {
+            console.log("The orgid : " + orgid[i]);
+            let data = "";
+            resp.on("data", (chunk: any) => {
+                data += chunk;
+            });
+            resp.on("end", () => {
+                requests ++;
+               // The data needs to be in in Object form for us to parse it before adding it to redis
+                const newdata = JSON.parse(data);
+                somnething.push(newdata);
+                if (requests === orgid.length) {
+                client.set(redisInfo, JSON.stringify(objecthandler(somnething, orgid)));
+                }
+            });
+        })
+        .on("error", (err: Error) => {
+            console.log("Error: " + err.message);
+        });
+    }
+    }
+    }
+    else {
     https.get(URL, (resp: Response) => {
         let data = "";
         resp.on("data", (chunk: any) => {
@@ -127,19 +178,14 @@ function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: 
         resp.on("end", () => {
            // The data needs to be in in Object form for us to parse it before adding it to redis
             const newdata = JSON.parse(data);
-            if (orgid) {
-            client.set(redisInfo, JSON.stringify(objecthandler(newdata, orgid)));
-            console.log("Set info for " + redisInfo + " to redis successfully!");
-            }
-            else {
             client.set(redisInfo, JSON.stringify(objecthandler(newdata)));
             console.log("Set info for " + redisInfo + " to redis successfully!");
-            }
         });
     })
     .on("error", (err: Error) => {
         console.log("Error: " + err.message);
     });
+}
 }
 
 
@@ -171,11 +217,8 @@ function setAlaYksikot(res: Response) {
     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/alayksikkokoodi/koodi?onlyValidKoodis=false", res, "getAlayksikot", OH.ObjectHandlerAlayksikot);
 }
 function setOrgListaus(res: Response) {
-    const orgid = ["02535", "02536", "02623", "10056",  "02631",  "02467",  "02504",  "02473",  "02469",  "10118",  "02470",  "02629",  "02358",  "10065",  "02507",  "02472",  "02630",  "10066", "02557", "02537", "02509", "10103", "02471"];
-    for (const i in orgid) {
-        console.log("the i: " + orgid[i]);
-    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/oppilaitosnumero/koodi/oppilaitosnumero_" + orgid[i], res, "getOrgListaus", OH.ObjectHandlerOrgListaus, orgid);
-    }
+    const orgid = ["00000", "02535", "02536", "02623", "10056",  "02631",  "02467",  "02504",  "02473",  "02469",  "10118",  "02470",  "02629",  "02358",  "10065",  "02507",  "02472",  "02630",  "10066", "02557", "02537", "02509", "10103", "02471", "4940015", "4020217", "4100010"];
+    HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/oppilaitosnumero/koodi/oppilaitosnumero_" , res, "getOrgListaus", OH.ObjectHandlerOrgListaus, orgid);
 }
 // function setAvainSanat(res: Response) {
 //     HTTPGET("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/julkaisunpaaluokka/koodi?onlyValidKoodis=false", res, "getJulkaisunLuokat");
