@@ -183,6 +183,9 @@ function getJulkaisunLuokat(req: Request, res: Response, next: NextFunction) {
 });
 }
 
+function testvirta(res: Response) {
+    kp.HTTPGETshow("https://virta-jtp.csc.fi/api/julkaisut/haku?julkaisunNimi=explicit", res, oh.ObjectHandlerTestVirta);
+}
 // NOT SURE IF NEEDED
 
 function getAlaYksikot(req: Request, res: Response, next: NextFunction) {
@@ -433,6 +436,7 @@ module.exports = {
     getJulkaisuVirtaCrossrefEsitäyttö: getJulkaisuVirtaCrossrefEsitäyttö,
     getOrganisaatioListaus: getOrganisaatioListaus,
     getUserLaurea: getUserLaurea,
+    testvirta: testvirta,
     // POST requests
     postJulkaisu: postJulkaisu,
     postOrg: postOrg,

@@ -559,13 +559,16 @@ function ObjectHandlerJulkaisutVIRTACR(obj: any): object[] {
         });
     }
 
+function ObjectHandlerTestVirta(obj: any): any {
+    return console.log("the object: " + obj + " The object stringified " + JSON.stringify(obj));
+}
+
 // WAIT FOR FURTHER INSTRUCTIONS, UNCLEAR RIGHT NOW
 // function ObjectHandlerJulkaisutVIRTAPART(obj: any) {
 
 // }
 function getrediscallback(key: string, callbacker: Function) {
        getRedis(key, function success(reply: string) {
-        // console.log("this is the reply: " + reply);
         const newdata = JSON.parse(reply);
             callbacker(newdata);
             },
@@ -647,19 +650,21 @@ function ObjectHandlerOrgListaus(obj: any, orgid: any) {
                 requiredFields,
             };
             orglistaus.push(oneorg);
+            orglistaus.sort((a: any, b: any) => {
+                const numA = parseInt(a.arvo);
+                const numB = parseInt(b.arvo);
+                if (numA < numB)
+                    return -1;
+                if (numA > numB)
+                    return 1;
+                return 0;
+            });
             settoRedis("getOrgListaus", orglistaus);
         }
 });
             return orglistaus;
     }
-function Logthatshit(obj: any, callback: Function) {
-    console.log("The last orglistaus: " + obj);
-    callback(obj);
-}
-function something(obj: any) {
-    console.log("The last object times two: " + obj);
-    settoRedis("getOrgListaus", obj);
-}
+
 function ObjectHandlerVirtaEsitäyttö(obj: any): object[] {
     return obj;
 }
@@ -757,4 +762,5 @@ module.exports = {
     ObjectHandlerCrossrefEsitäyttö: ObjectHandlerCrossrefEsitäyttö,
     ObjectHandlerAllJulkaisut: ObjectHandlerAllJulkaisut,
     ObjectHandlerOrgListaus: ObjectHandlerOrgListaus,
+    ObjectHandlerTestVirta: ObjectHandlerTestVirta,
 };

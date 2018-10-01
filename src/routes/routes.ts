@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 const router: Router = Router();
 // Importing db const from queries.ts
 const db = require("../queries");
+const test = require("../koodistopalvelu");
 // Define the routes here, all will have the prexix /api/ as per the proxypass in the apache settings
 // GET requests here
 router.get("/julkaisut/lista/all", db.getJulkaisut);
@@ -30,6 +31,7 @@ router.get("/haku/julkaisu/", db.getJulkaisuVirtaCrossrefEsitäyttö);
 router.get("/user", db.getUser);
 router.get("/user/laurea", db.getUserLaurea);
 router.get("/organisaatiolistaus", db.getOrganisaatioListaus);
+router.get("/testvirta", db.testvirta);
 // POST requests here
 router.post("/julkaisu", db.postJulkaisu);
 router.post("/org", db.postOrg);
