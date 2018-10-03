@@ -20,8 +20,8 @@ const getRedis = (rediskey: string, success: any, error: any) => {
     });
 };
 
-const visiblefields = [
-    "etunimet",
+const visibleFields = [
+  "etunimet",
   "sukunimi",
   "julkaisutyyppi",
   "julkaisuvuosi",
@@ -71,7 +71,6 @@ const requiredFields = [
     "tekijat",
     "julkaisuntekijoidenlukumaara",
     "organisaatiotekija",
-    "alayksikko",
     "konferenssinvakiintunutnimi",
     "isbn",
     "issn",
@@ -646,7 +645,7 @@ function ObjectHandlerOrgListaus(obj: any, orgid: any) {
                 selite: e.metadata[0].nimi,
                 kuvaus: e.metadata[0].kuvaus,
                 alayksikot: yksikotarray,
-                visiblefields,
+                visibleFields,
                 requiredFields,
             };
             orglistaus.push(oneorg);
