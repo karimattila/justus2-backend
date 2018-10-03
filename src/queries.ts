@@ -320,7 +320,8 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
         return db.one("INSERT INTO tieteenala (tieteenalakoodi, jnro, julkaisuid)" + "values ('joku koodi', 5 , " + JSON.parse(julkaisuid.id) + ") RETURNING julkaisuid", req.body.tieteenala);
     })
     .then((julkaisuid: any) => {
-        return db.one("INSERT INTO taiteenala (julkaisuid, taiteenalakoodi, jnro)" + "values (" + JSON.parse(julkaisuid.id) + ", 'joku taiteenalakoodi', 6) RETURNING julkaisuid", req.body.taiteenala);
+        return console.log(julkaisuid);
+        // return db.one("INSERT INTO taiteenala (julkaisuid, taiteenalakoodi, jnro)" + "values (" + JSON.parse(julkaisuid.id) + ", 'joku taiteenalakoodi', 6) RETURNING julkaisuid", req.body.taiteenala);
     })
     .then((julkaisuid: any) => {
         return db.one("INSERT INTO avainsana (julkaisuid, avainsana)" + "values (" + JSON.parse(julkaisuid.id) + ", 'joku avainsana') RETURNING julkaisuid", req.body.avainsanat);
