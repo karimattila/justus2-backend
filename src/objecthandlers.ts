@@ -4,7 +4,6 @@
 */
 
 import { Request, Response, NextFunction } from "express";
-import { pushd } from "shelljs";
 const https = require("https");
 const redis = require("redis");
 const client = redis.createClient();
@@ -20,73 +19,6 @@ const getRedis = (rediskey: string, success: any, error: any) => {
         }
     });
 };
-
-// const visibleFields = [
-//   "etunimet",
-//   "sukunimi",
-//   "julkaisutyyppi",
-//   "julkaisuvuosi",
-//   "julkaisuvuodenlisatieto",
-//   "julkaisunnimi",
-//   "tekijat",
-//   "julkaisuntekijoidenlukumaara",
-//   "organisaatiotekija",
-//   "konferenssinvakiintunutnimi",
-//   "isbn",
-//   "issn",
-//   "volyymi",
-//   "numero",
-//   "lehdenjulkaisusarjannimi",
-//   "kustantaja",
-//   "julkaisunkansainvalisyys",
-//   "tieteenala",
-//   "taiteenala",
-//   "taidealantyyppikategoria",
-//   "kansainvalinenyhteisjulkaisu",
-//   "yhteisjulkaisuyrityksenkanssa",
-//   "avoinsaatavuus",
-//   "julkaisurinnakkaistallennettu",
-//   "rinnakkaistallennetunversionverkkoosoite",
-//   "emojulkaisunnimi",
-//   "emojulkaisuntoimittajat",
-//   "sivut",
-//   "artikkelinumero",
-//   "julkaisunkustannuspaikka",
-//   "avainsanat",
-//   "julkaisumaa",
-//   "julkistamispaikkakunta",
-//   "tapahtumanlisatieto",
-//   "julkaisunkieli",
-//   "doitunniste",
-//   "muutunniste",
-//   "pysyvaverkkoosoite",
-//   "tekijanrooli",
-//   "lisatieto"
-// ];
-// const requiredFields = [
-//     "etunimet",
-//     "sukunimi",
-//     "julkaisutyyppi",
-//     "julkaisuvuosi",
-//     "julkaisunnimi",
-//     "tekijat",
-//     "julkaisuntekijoidenlukumaara",
-//     "organisaatiotekija",
-//     "konferenssinvakiintunutnimi",
-//     "isbn",
-//     "issn",
-//     "lehdenjulkaisusarjannimi",
-//     "kustantaja",
-//     "julkaisunkansainvalisyys",
-//     "tieteenala",
-//     "tieteenalakoodi",
-//     "kansainvalinenyhteisjulkaisu",
-//     "yhteisjulkaisuyrityksenkanssa",
-//     "avoinsaatavuus",
-//     "julkaisurinnakkaistallennettu",
-//     "rinnakkaistallennetunversionverkkoosoite"
-// ];
-
 
 
 // Objecthandler for Koodistopalvelu kielet
@@ -747,15 +679,6 @@ function ObjectHandlerOrgListaus(obj: any, orgid: any) {
             return 0;
         });
     }
-            // orglistaus.push(oneorg);
-            // orglistaus.sort((a: any, b: any) => {
-            //     const numA = parseInt(a.arvo);
-            //     const numB = parseInt(b.arvo);
-            //     if (numA < numB)
-            //         return -1;
-            //     if (numA > numB)
-            //         return 1;
-            //     return 0;
             settoRedis("getOrgListaus", orglistaus);
         }
 });
@@ -838,6 +761,50 @@ function ObjectHandlerAllJulkaisut(obj: any) {
                 };
     });
 }
+
+function ObjectHandlerAllJulkaisutmin(obj: any) {
+    return obj.map((x: any) => {
+                return {
+                    julkaisu: {
+                        id: x.id,
+                        organisaatiotunnus: x.organisaatiotunnus,
+                        julkaisutyyppi: x.julkaisutyyppi,
+                        julkaisuvuosi: x.julkaisuvuosi,
+                        julkaisunnimi: x.julkaisunnimi,
+                        tekijat: x.tekijat,
+                        julkaisuntekijoidenlukumaara: x.julkaisuntekijoidenlukumaara,
+                        konferenssinvakiintunutnimi: x.konferenssinvakiintunutnimi,
+                        emojulkaisunnimi: x.emojulkaisunnimi,
+                        isbn: x.isbn,
+                        emojulkaisuntoimittajat: x.emojulkaisuntoimittajat,
+                        lehdenjulkaisusarjannimi: x.lehdenjulkaisusarjannimi,
+                        issn: x.issn,
+                        volyymi: x.volyymi,
+                        numero: x.numero,
+                        sivut: x.sivut,
+                        artikkelinumero: x.artikkelinumero,
+                        kustantaja: x.kustantaja,
+                        julkaisunkustannuspaikka: x.julkaisunkustannuspaikka,
+                        julkaisunkieli: x.julkaisunkieli,
+                        julkaisunkansainvalisyys: x.julkaisunkansainvalisyys,
+                        julkaisumaa: x.julkaisumaa,
+                        kansainvalinenyhteisjulkaisu: x.kansainvalinenyhteisjulkaisu,
+                        yhteisjulkaisuyrityksenkanssa: x.yhteisjulkaisuyrityksenkanssa,
+                        doitunniste: x.doitunniste,
+                        pysyvaverkkoosoite: x.pysyvaverkkoosoite,
+                        avoinsaatavuus: x.avoinsaatavuus,
+                        julkaisurinnakkaistallennettu: x.julkaisurinnakkaistallennettu,
+                        rinnakkaistallennetunversionverkkoosoite: x.rinnakkaistallennetunversionverkkoosoite,
+                        lisatieto: x.lisatietoteksti,
+                        jufotunnus: x.jufotunnus,
+                        jufoluokitus: x.jufoluokitus,
+                        julkaisuntila: x.julkaisuntila,
+                        username: x.username,
+                        modified: x.modified,
+                    }
+                };
+            });
+}
 module.exports = {
     ObjectHandlerKielet: ObjectHandlerKielet,
     ObjectHandlerValtiot: ObjectHandlerValtiot,
@@ -860,4 +827,5 @@ module.exports = {
     ObjectHandlerAllJulkaisut: ObjectHandlerAllJulkaisut,
     ObjectHandlerOrgListaus: ObjectHandlerOrgListaus,
     ObjectHandlerTestVirta: ObjectHandlerTestVirta,
+    ObjectHandlerAllJulkaisutmin: ObjectHandlerAllJulkaisutmin,
 };

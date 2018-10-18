@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { FILE } from "dns";
 const schedule = require("node-schedule");
 // https will be used for external API calls
 const https = require("https");
@@ -49,6 +48,19 @@ function getJulkaisut(req: Request, res: Response, next: NextFunction) {
             res.status(200)
                 .json({
                     julkaisut: oh.ObjectHandlerAllJulkaisut(data)
+    });
+})
+        .catch((err: any) => {
+        return next(err);
+});
+}
+
+function getJulkaisutmin(req: Request, res: Response, next: NextFunction) {
+    db.any("select julkaisu.* from julkaisu")
+        .then((data: any) => {
+            res.status(200)
+                .json({
+                    julkaisut: oh.ObjectHandlerAllJulkaisutmin(data)
     });
 })
         .catch((err: any) => {
@@ -317,35 +329,94 @@ function postJulkaisu(req: Request, res: Response, next: NextFunction) {
             "INSERT INTO julkaisu (organisaatiotunnus, julkaisutyyppi, julkaisuvuosi, julkaisunnimi, tekijat, julkaisuntekijoidenlukumaara, konferenssinvakiintunutnimi, emojulkaisunnimi, isbn, emojulkaisuntoimittajat, lehdenjulkaisusarjannimi, issn, volyymi, numero, sivut, artikkelinumero, kustantaja, julkaisunkustannuspaikka, julkaisunkieli, julkaisunkansainvalisyys, julkaisumaa, kansainvalinenyhteisjulkaisu, yhteisjulkaisuyrityksenkanssa, doitunniste, pysyvaverkkoosoite, julkaisurinnakkaistallennettu, avoinsaatavuus, rinnakkaistallennetunversionverkkoosoite, lisatieto, jufotunnus, jufoluokitus, julkaisuntila, username, modified)" + "values (${julkaisu.organisaatiotunnus}, ${julkaisu.julkaisutyyppi}, ${julkaisu.julkaisuvuosi}, ${julkaisu.julkaisunnimi}, ${julkaisu.tekijat}, ${julkaisu.julkaisuntekijoidenlukumaara}, ${julkaisu.konferenssinvakiintunutnimi}, ${julkaisu.emojulkaisunnimi}, ${julkaisu.isbn}, ${julkaisu.emojulkaisuntoimittajat}, ${julkaisu.lehdenjulkaisusarjannimi}, ${julkaisu.issn}, ${julkaisu.volyymi}, ${julkaisu.numero}, ${julkaisu.sivut}, ${julkaisu.artikkelinumero}, ${julkaisu.kustantaja}, ${julkaisu.julkaisunkustannuspaikka}, ${julkaisu.julkaisunkieli}, ${julkaisu.julkaisunkansainvalisyys}, ${julkaisu.julkaisumaa}, ${julkaisu.kansainvalinenyhteisjulkaisu}, ${julkaisu.yhteisjulkaisuyrityksenkanssa}, ${julkaisu.doitunniste}, ${julkaisu.pysyvaverkkoosoite}, ${julkaisu.julkaisurinnakkaistallennettu}, ${julkaisu.avoinsaatavuus}, ${julkaisu.rinnakkaistallennetunversionverkkoosoite}, ${julkaisu.lisatieto}, ${julkaisu.jufotunnus}, ${julkaisu.jufoluokitus}, ${julkaisu.julkaisuntila}, ${julkaisu.username}, ${julkaisu.modified}) RETURNING id", req.body)
 
     .then((julkaisuidinit: any) => {
-        // return console.log(JSON.parse(julkaisuidinit.id));
-        return db.one("INSERT INTO tieteenala (tieteenalakoodi, jnro, julkaisuid)" + "values ('jokukoodi', 5 , " + JSON.parse(julkaisuidinit.id) + ") RETURNING julkaisuid", req.body.tieteenala);
+        return db.one("INSERT INTO tieteenala (tieteenalakoodi, jnro, julkaisuid)" + "values (" + req.body.tieteenala.map((e: any) => e.tieteenalakoodi) + ", " + req.body.tieteenala.map((s: any) => s.jnro) + ", " + JSON.parse(julkaisuidinit.id) + ") RETURNING julkaisuid");
     })
     .then((julkaisuidinit: any) => {
-        // return console.log(julkaisuidinit);
-        return db.one("INSERT INTO taiteenala (julkaisuid, taiteenalakoodi, jnro)" + "values ( " + JSON.parse(julkaisuidinit.julkaisuid) + ", 'jokutaiteenalakoodi', 6) RETURNING julkaisuid", req.body.taiteenala);
+        return db.one("INSERT INTO taiteenala (julkaisuid, taiteenalakoodi, jnro)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", " + req.body.taiteenala.map((e: any) => e.taiteenalakoodi) + ", " + req.body.taiteenala.map((s: any) => s.jnro) + ") RETURNING julkaisuid");
     })
     .then((julkaisuidinit: any) => {
-        // return console.log("the init obj: " + JSON.stringify(julkaisuidinit.julkaisuid));
-        return db.one("INSERT INTO avainsana (julkaisuid, avainsana)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", 'jokuavainsana') RETURNING julkaisuid", req.body.avainsanat);
+        // return console.log(req.body.avainsanat.toString());
+        return db.one("INSERT INTO avainsana (julkaisuid, avainsana)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", '" + req.body.avainsanat.map((e: any) => e) + "') RETURNING julkaisuid");
     })
     .then((julkaisuidinit: any) => {
-        // return console.log(julkaisuid);
-        return db.one("INSERT INTO taidealantyyppikategoria (julkaisuid, tyyppikategoria)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", 7) RETURNING julkaisuid", req.body.taidealantyyppikategoria);
+        return db.one("INSERT INTO taidealantyyppikategoria (julkaisuid, tyyppikategoria)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + "," + req.body.taidealantyyppikategoria.map((e: any) => e.tyyppikategoria) + ") RETURNING julkaisuid");
     })
+    // .then((julkaisuidinit: any) => {
+    //     //     Object.keys(req.body.lisatieto).forEach(function (key) {
+    //     //     const avain = key;
+    //     //     const val = req.body.lisatieto[key];
+    //     //     // return console.log("The key " + avain + " the val " + val);
+    //     // });
+    //     return db.one("INSERT INTO lisatieto (julkaisuid, lisatietotyyppi, lisatietoteksti)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", " + Object.keys(req.body.lisatieto).forEach(function(key) {
+    //         const avain = key;
+    //     return avain;
+    //     }) + "," + Object.keys(req.body.lisatieto).forEach(function(key) {
+    //         const val = req.body.lisatieto[key];
+    //         return val;
+    //     }) + ") RETURNING julkaisuid");
+    // })
     .then((julkaisuidinit: any) => {
-        return db.one("INSERT INTO lisatieto (julkaisuid, lisatietotyyppi, lisatietoteksti)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", 'testlisatietotyyppi', 'jokulisatietoteksti') RETURNING julkaisuid", req.body.lisatieto);
-    })
-    .then((julkaisuidinit: any) => {
-        return db.one("INSERT INTO organisaatiotekija (julkaisuid, etunimet, sukunimi, orcid, rooli)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", 'asd', 'asd', 'asd', 'asd') RETURNING id", req.body.organisaatiotekija);
+        return db.one("INSERT INTO organisaatiotekija (julkaisuid, etunimet, sukunimi, orcid, rooli)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", '" + req.body.organisaatiotekija.map((e: any) => e.etunimet)  + "', '" + req.body.organisaatiotekija.map((s: any) => s.sukunimi)  + "', '" + req.body.organisaatiotekija.map((x: any) => x.orcid)  + "', '" + req.body.organisaatiotekija.map((y: any) => y.rooli) + "') RETURNING id");
     })
     .then((organisaatiotekijaid: any) => {
-        // return console.log("The orgid: " + JSON.stringify(organisaatiotekijaid));
-        return db.one("INSERT INTO alayksikko (organisaatiotekijaid, alayksikko)" + "values (" + JSON.parse(organisaatiotekijaid.id) + ", 'joku alayksikko') RETURNING organisaatiotekijaid", req.body.alayksikko);
+        return db.one("INSERT INTO alayksikko (organisaatiotekijaid, alayksikko)" + "values (" + JSON.parse(organisaatiotekijaid.id) + ",'" + req.body.avainsanat.map((e: any) => e) + "') RETURNING organisaatiotekijaid");
     })
     .then((obj: any) =>  {
         res.status(200)
         .json({
             message: obj,
+        });
+    })
+    .catch(function(err: any) {
+    return next(err);
+     });
+});
+}
+
+
+
+function updateJulkaisu(req: Request, res: Response, next: NextFunction) {
+    db.task(() => {
+        return db.one(
+            "UPDATE julkaisu where id = ${id} (organisaatiotunnus, julkaisutyyppi, julkaisuvuosi, julkaisunnimi, tekijat, julkaisuntekijoidenlukumaara, konferenssinvakiintunutnimi, emojulkaisunnimi, isbn, emojulkaisuntoimittajat, lehdenjulkaisusarjannimi, issn, volyymi, numero, sivut, artikkelinumero, kustantaja, julkaisunkustannuspaikka, julkaisunkieli, julkaisunkansainvalisyys, julkaisumaa, kansainvalinenyhteisjulkaisu, yhteisjulkaisuyrityksenkanssa, doitunniste, pysyvaverkkoosoite, julkaisurinnakkaistallennettu, avoinsaatavuus, rinnakkaistallennetunversionverkkoosoite, lisatieto, jufotunnus, jufoluokitus, julkaisuntila, username, modified)" + "values (${julkaisu.organisaatiotunnus}, ${julkaisu.julkaisutyyppi}, ${julkaisu.julkaisuvuosi}, ${julkaisu.julkaisunnimi}, ${julkaisu.tekijat}, ${julkaisu.julkaisuntekijoidenlukumaara}, ${julkaisu.konferenssinvakiintunutnimi}, ${julkaisu.emojulkaisunnimi}, ${julkaisu.isbn}, ${julkaisu.emojulkaisuntoimittajat}, ${julkaisu.lehdenjulkaisusarjannimi}, ${julkaisu.issn}, ${julkaisu.volyymi}, ${julkaisu.numero}, ${julkaisu.sivut}, ${julkaisu.artikkelinumero}, ${julkaisu.kustantaja}, ${julkaisu.julkaisunkustannuspaikka}, ${julkaisu.julkaisunkieli}, ${julkaisu.julkaisunkansainvalisyys}, ${julkaisu.julkaisumaa}, ${julkaisu.kansainvalinenyhteisjulkaisu}, ${julkaisu.yhteisjulkaisuyrityksenkanssa}, ${julkaisu.doitunniste}, ${julkaisu.pysyvaverkkoosoite}, ${julkaisu.julkaisurinnakkaistallennettu}, ${julkaisu.avoinsaatavuus}, ${julkaisu.rinnakkaistallennetunversionverkkoosoite}, ${julkaisu.lisatieto}, ${julkaisu.jufotunnus}, ${julkaisu.jufoluokitus}, ${julkaisu.julkaisuntila}, ${julkaisu.username}, ${julkaisu.modified}) RETURNING id", req.body)
+
+    .then((julkaisuidinit: any) => {
+        return db.one("UPDATE tieteenala where id = ${id} (tieteenalakoodi, jnro, julkaisuid)" + "values (" + req.body.tieteenala.map((e: any) => e.tieteenalakoodi) + ", " + req.body.tieteenala.map((s: any) => s.jnro) + ", " + JSON.parse(julkaisuidinit.id) + ") RETURNING julkaisuid");
+    })
+    .then((julkaisuidinit: any) => {
+        return db.one("UPDATE taiteenala where id = ${id} (julkaisuid, taiteenalakoodi, jnro)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", " + req.body.taiteenala.map((e: any) => e.taiteenalakoodi) + ", " + req.body.taiteenala.map((s: any) => s.jnro) + ") RETURNING julkaisuid");
+    })
+    .then((julkaisuidinit: any) => {
+        // return console.log(req.body.avainsanat.toString());
+        return db.one("UPDATE avainsana where id = ${id} (julkaisuid, avainsana)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", 'avainsanat') RETURNING julkaisuid");
+    })
+    .then((julkaisuidinit: any) => {
+        return db.one("UPDATE taidealantyyppikategoria where id = ${id} (julkaisuid, tyyppikategoria)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + "," + req.body.taidealantyyppikategoria.map((e: any) => e.tyyppikategoria) + ") RETURNING julkaisuid");
+    })
+    // .then((julkaisuidinit: any) => {
+    //     //     Object.keys(req.body.lisatieto).forEach(function (key) {
+    //     //     const avain = key;
+    //     //     const val = req.body.lisatieto[key];
+    //     //     // return console.log("The key " + avain + " the val " + val);
+    //     // });
+    //     return db.one("UPDATE lisatieto where id = ${id} (julkaisuid, lisatietotyyppi, lisatietoteksti)" + "values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", " + Object.keys(req.body.lisatieto).forEach(function(key) {
+    //         const avain = key;
+    //     return avain;
+    //     }) + "," + Object.keys(req.body.lisatieto).forEach(function(key) {
+    //         const val = req.body.lisatieto[key];
+    //         return val;
+    //     }) + ") RETURNING julkaisuid");
+    // })
+    .then((julkaisuidinit: any) => {
+        return db.one("UPDATE organisaatiotekija where julkaisuid = ${id} (julkaisuid, etunimet, sukunimi, orcid, rooli)" + " values (" + JSON.parse(julkaisuidinit.julkaisuid) + ", '" + req.body.organisaatiotekija.map((e: any) => e.etunimet) + "' , '" + req.body.organisaatiotekija.map((s: any) => s.sukunimi) + "' , '" + req.body.organisaatiotekija.map((x: any) => x.orcid) + "' , '" + req.body.organisaatiotekija.map((y: any) => y.rooli) + "') RETURNING id");
+    })
+    .then((organisaatiotekijaid: any) => {
+        return db.one("UPDATE alayksikko where id = ${id} (organisaatiotekijaid, alayksikko)" + "values (" + JSON.parse(organisaatiotekijaid.id) + ", '" + req.body.organsisaatiotekija.map((e: any) => e) + "') RETURNING organisaatiotekijaid");
+    })
+    .then((obj: any) =>  {
+        res.status(200)
+        .json({
+            message: "updated julkaisu where julkaisuid = " + obj,
         });
     })
     .catch(function(err: any) {
@@ -412,6 +483,7 @@ module.exports = {
     // GET requests
     getOrgTekija: getOrgTekija,
     getJulkaisut: getJulkaisut,
+    getJulkaisutmin: getJulkaisutmin,
     getAjulkaisu: getAjulkaisu,
     getJulkaisuListaforOrg: getJulkaisuListaforOrg,
     getJulkaisunLuokat: getJulkaisunLuokat,
@@ -443,5 +515,7 @@ module.exports = {
     // PUT requests
     putJulkaisu: putJulkaisu,
     putJulkaisuntila: putJulkaisuntila,
+    // Update requests
+    updateJulkaisu: updateJulkaisu,
 
 };

@@ -123,7 +123,6 @@ function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: 
         const somnething: object [] = [];
         let requests: number = 0;
         for (const i in orgid) {
-        console.log(orgid[i][0]);
         if (orgid[i][0] === "4") {
             https.get("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/tutkimusorganisaatio/koodi/tutkimusorganisaatio_" + orgid[i], (resp: Response) => {
                 let data = "";
@@ -147,7 +146,6 @@ function HTTPGET (URL: String, res: Response, redisInfo: String, objecthandler: 
         }
         else {
         https.get("https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/oppilaitosnumero/koodi/oppilaitosnumero_" + orgid[i], (resp: Response) => {
-            console.log("The orgid : " + orgid[i]);
             let data = "";
             resp.on("data", (chunk: any) => {
                 data += chunk;
