@@ -2,6 +2,11 @@
 # vi: set ft=ruby :
 
 Vagrant.require_version ">= 1.7.0"
+# vagrant plugin install vagrant-vbguest
+
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise 'Vagrant VB Guest additions plugin is required - Run "vagrant plugin install vagrant-vbguest"'
+end
 
 Vagrant.configure("2") do |config|
 
@@ -10,6 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8080 
   config.vm.network :forwarded_port, guest: 80, host: 3000
   config.vm.network :forwarded_port, guest: 5432, host: 5432, auto_correct: true
+  config.vm.synced_folder "./", "/opt/sources", nfs: true
   config.vm.hostname = "justus-local"
 
   # Centos/7 box does not include quest additions by default which are needed for folder live reloading

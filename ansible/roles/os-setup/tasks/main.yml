@@ -1,9 +1,33 @@
 - name: Install common dev tools for vagrant
   yum: 
-    name: "{{ item }}"
+    name: [
+      "net-tools",
+      "gcc",
+      "nano",
+      "nmap",
+      "git"
+    ]
     state: latest
-  with_items:
-    - gcc
-    - nano
-    - nmap
   when: environment_id == "vagrant"
+
+- name: Install EPEL-release
+  yum:
+    name: "epel-release"
+    state: latest
+
+- name: Set vm.overcommit_memory to 1
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    state: present
+
+- name: Disable THP support scripts added to rc.local
+  lineinfile:
+    path: /etc/rc.local
+    line: |
+      echo never > /sys/kernel/mm/transparent_hugepage/enabled
+      echo never > /sys/kernel/mm/transparent_hugepage/defrag
+
+- name: Change permissions of /etc/rc.local to make it run on boot
+  shell: chmod +x /etc/rc.d/rc.local
+  become_method: sudo

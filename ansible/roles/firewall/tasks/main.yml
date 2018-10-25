@@ -15,8 +15,8 @@
     - { port: 8080, protocol: tcp, comment: "Open port 8080 for Apache" }
     - { port: 5432, protocol: tcp, comment: "Open port 5432 for pgAdmin" }
 
-- name: Restart server to apply firewall rules
-  command: /sbin/shutdown -r
-  async: 0
-  poll: 0
-  ignore_errors: true
+#- name: Restart server to apply firewall rules
+#  command: /sbin/shutdown -r
+#  async: 0
+#  poll: 0
+#  ignore_errors: true

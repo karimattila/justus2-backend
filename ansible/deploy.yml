@@ -5,19 +5,12 @@
     - "vars/environments/{{ environment_id }}.yml"
     - "{{ secrets_file_path }}"
   roles:
+    # - update
     - os-setup
-    - Curl_nodejs
-    - yum_nodejs
-    - apache-install
-    # - shibboleth-install
-    - apache-config
-    - postgres-install
-    - postgres-data
-    - justus-backend
+    - apache
+    - nodejs
+    - redis
     - firewall
-    - postgres-session
-    - Install-Epel-Release
-    - Install-Redis
-    - Redis-Settings
-    - Disable-THP
-    - npm-start
+    - postgres
+    - services
+    - justus
