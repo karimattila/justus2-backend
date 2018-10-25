@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
 
   config.vm.provision "ansible_local" do |ansible|
-    ansible.inventory_path = "inventories/vagrant"
+    ansible.inventory_path = "inventories/vagrant.yml"
     ansible.limit = "all"
     ansible.playbook = "deploy.yml"
     ansible.provisioning_path = "/vagrant/ansible"
