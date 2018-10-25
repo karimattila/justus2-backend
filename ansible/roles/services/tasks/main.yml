@@ -21,6 +21,7 @@
     - justus.ini
     - postgres.ini
     - redis.ini
+    - samba.ini
   notify: Reload Supervisor
 
 - name: Install service

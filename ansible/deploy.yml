@@ -12,5 +12,6 @@
     - redis
     - firewall
     - postgres
+    - samba
     - services
     - justus
