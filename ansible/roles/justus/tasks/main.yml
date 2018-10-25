@@ -87,11 +87,25 @@
     owner: vagrant
     group: vagrant
 
+- name: Create root.npm directory owned by vagrant
+  file:
+    path: /root/.npm
+    state: directory
+    owner: vagrant
+    group: vagrant
+
 - name: Create package.json link to external directory
   file:
     path: /opt/dependencies/package.json
     src: "{{ sources.path }}/package.json"
     state: link
+
+- name: Create package-lock.json link to external directory
+  file:
+    path: /opt/dependencies/package-lock.json
+    src: "{{ sources.path }}/package-lock.json"
+    state: link
+    force: yes
 
 - name: Create bind mount between folders
   mount:
@@ -111,3 +125,9 @@
   shell: psql -h 10.10.10.10 -U appaccount -d justus {{ "<" }} node_modules/connect-pg-simple/table.sql
   args:
     chdir: "{{ sources.path }}"
+
+- name: Build sources
+  shell: /usr/bin/npm run build
+  args:
+    chdir: "{{ sources.path }}"
+  become_user: vagrant

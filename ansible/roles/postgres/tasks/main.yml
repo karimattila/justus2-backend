@@ -12,8 +12,14 @@
 
 - name: Make sure configuration directory exists
   file:
-    path: /etc/postgresql
+    path: /var/lib/pgsql/data
     state: directory
+    owner: postgres
+    group: postgres
+
+- name: Create PostgreSQL database cluster
+  command: postgresql-setup initdb
+  ignore_errors: True
 
 - name: Copy PostgreSQL configuration files
   template: 
@@ -25,24 +31,15 @@
   with_items:
     - {
         src: pg_hba.conf.j2,
-        dest: /etc/postgresql/pg_hba.conf,
+        dest: /var/lib/pgsql/data/pg_hba.conf,
         mode: "0600",
         owner: postgres,
         group: postgres
       }
     - { 
         src: postgresql.conf.j2,
-        dest: /etc/postgresql/postgresql.conf,
+        dest: /var/lib/pgsql/data/postgresql.conf,
         mode: "0600",
         owner: postgres,
         group: postgres
        }
-
-- name: Set SELinux to permissive to allow PostgreSQL access
-  selinux:
-    policy: targeted
-    state: permissive
-
-- name: Create PostgreSQL database cluster
-  command: postgresql-setup initdb
-  ignore_errors: True
