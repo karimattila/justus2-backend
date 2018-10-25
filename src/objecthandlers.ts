@@ -501,10 +501,10 @@ function ObjectHandlerTestVirta(obj: any): any {
 // }
 function getrediscallback(key: string, callbacker: Function) {
     getRedis(key, function success(reply: string) {
-        let newdata = null;
+        let newdata = undefined;
         try {
             newdata = JSON.parse(reply);
-        } catch(err) {
+        } catch (err) {
             newdata = [];
         }
         callbacker(newdata);
